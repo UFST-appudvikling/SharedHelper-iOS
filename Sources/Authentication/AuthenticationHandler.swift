@@ -70,7 +70,7 @@ public final class AuthenticationHandler: NSObject {
     /// - Throws: ``AuthenticationHandler/CustomError``
     public func getUser() async throws -> UserModel {
         let token = try await fetchToken()
-        return try await getUserInfo(token: token)
+        return try await getUserInfo(token: token.0)
     }
     /// Give you the token, either from Keychain or login user by using AuthenticationServices also Store it in Keychain
     ///
@@ -87,16 +87,16 @@ public final class AuthenticationHandler: NSObject {
     /// - Example:
     /// ````
     /// Task {
-    ///    let token = try await authHandler.fetchToken()
+    ///    let token = try await authHandler.fetchToken().0
     /// }
     /// ````
-    /// - Returns: ``AuthenticationHandler/TokenModel``
+    /// - Returns: (``AuthenticationHandler/TokenModel``, ``AuthenticationHandler/TokenSource``)
     /// - Throws: ``AuthenticationHandler/CustomError``
-    public func fetchToken() async throws -> TokenModel {
+    public func fetchToken() async throws -> (TokenModel, TokenSource) {
         if let token = KeychainHelper.retrieveToken() {
             return try await validateTokenOrRefresh(token: token)
         } else {
-            return try await login()
+            return (try await loginByShowingSheet(), .loginSheet)
         }
     }
     /// Force user to Login by using AuthenticationServices
@@ -108,7 +108,7 @@ public final class AuthenticationHandler: NSObject {
     /// - Returns: discardableResult: ``AuthenticationHandler/TokenModel``
     /// - Throws: ``AuthenticationHandler/CustomError``
     @discardableResult
-    public func login() async throws -> TokenModel {
+    public func loginByShowingSheet() async throws -> TokenModel {
         let callBackURL = await getAuthorizationCode()
         let tokenModel = try await getToken(authorizationCode: callBackURL.get())
         return tokenModel
@@ -153,18 +153,18 @@ public final class AuthenticationHandler: NSObject {
 // MARK: - Private Methodes
 extension AuthenticationHandler {
     // MARK: Handler Methodes
-    private func validateTokenOrRefresh(token: TokenModel) async throws -> TokenModel {
+    private func validateTokenOrRefresh(token: TokenModel) async throws -> (TokenModel, TokenSource) {
         if token.accessTokenIsValid {
-            return token
+            return (token, .keychain)
         } else {
             return try await refreshTokenOrLogin(token: token)
         }
     }
-    private func refreshTokenOrLogin(token: TokenModel) async throws -> TokenModel {
+    private func refreshTokenOrLogin(token: TokenModel) async throws -> (TokenModel, TokenSource) {
         if token.refreshTokenIsValid {
-            return try await getToken(refreshToken: token.refreshToken)
+            return (try await getToken(refreshToken: token.refreshToken), .refresh)
         } else {
-            return try await login()
+            return (try await loginByShowingSheet(), .loginSheet)
         }
     }
 
@@ -221,7 +221,7 @@ extension AuthenticationHandler {
             }
         } catch let error {
             if case let CustomError.unexpectedStatusCode(code) = error, (400..<500).contains(code) {
-                return try await login()
+                return try await loginByShowingSheet()
             } else {
                 throw error
             }

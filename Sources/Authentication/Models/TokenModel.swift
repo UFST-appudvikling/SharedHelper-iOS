@@ -85,3 +85,11 @@ private extension Date {
         return (second ?? 0) + 1
     }
 }
+
+extension AuthenticationHandler {
+    public enum TokenSource {
+        case loginSheet
+        case keychain
+        case refresh
+    }
+}

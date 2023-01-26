@@ -30,40 +30,32 @@ let package = Package(
         .package(
             url: "https://github.com/firebase/firebase-ios-sdk",
             from: "9.3.0"
-        ),
-        .package(url: "https://github.com/realm/SwiftLint.git",
-                 branch: "main")
+        )
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Networking",
-            dependencies: [],
-            plugins: [.plugin(name: "SwiftLintPlugin", package: "SwiftLint")]),
+            dependencies: []),
         .testTarget(
             name: "NetworkingTests",
-            dependencies: ["Networking"],
-            plugins: [.plugin(name: "SwiftLintPlugin", package: "SwiftLint")]),
+            dependencies: ["Networking"]),
         .target(
             name: "Authentication",
-            dependencies: [],
-            plugins: [.plugin(name: "SwiftLintPlugin", package: "SwiftLint")]),
+            dependencies: []),
         .target(
             name: "Tracking",
             dependencies: [
                 .product(name: "Mixpanel", package: "mixpanel-swift"),
-            ],
-            plugins: [.plugin(name: "SwiftLintPlugin", package: "SwiftLint")]),
+            ]),
         .target(
             name: "VersionCheck",
             dependencies: [
                 .product(name: "FirebaseRemoteConfig", package: "firebase-ios-sdk"),
-            ],
-            plugins: [.plugin(name: "SwiftLintPlugin", package: "SwiftLint")]),
+            ]),
         .testTarget(
             name: "VersionCheckTests",
-            dependencies: ["VersionCheck"],
-            plugins: [.plugin(name: "SwiftLintPlugin", package: "SwiftLint")]),
+            dependencies: ["VersionCheck"])
     ]
 )
