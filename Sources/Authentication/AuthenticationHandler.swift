@@ -25,6 +25,8 @@ public final class AuthenticationHandler: NSObject {
     // MARK: Properties
     internal let configuration: Configuration
     internal let contextProvider: ASPresentationAnchor
+    internal var token: TokenModel? = nil
+
     // MARK: Methods
     /// You should use this method to be able to start using ``AuthenticationHandler``
     ///
@@ -93,10 +95,18 @@ public final class AuthenticationHandler: NSObject {
     /// - Returns: (``AuthenticationHandler/TokenModel``, ``AuthenticationHandler/TokenSource``)
     /// - Throws: ``AuthenticationHandler/CustomError``
     public func fetchToken() async throws -> (TokenModel, TokenSource) {
-        if let token = KeychainHelper.retrieveToken() {
-            return try await validateTokenOrRefresh(token: token)
+        if let token = self.token {
+            let result = try await validateTokenOrRefresh(token: token)
+            self.token = result.0
+            return result
+        } else if let token = KeychainHelper.retrieveToken() {
+            let result = try await validateTokenOrRefresh(token: token)
+            self.token = result.0
+            return result
         } else {
-            return (try await loginByShowingSheet(), .loginSheet)
+            let result = try await loginByShowingSheet()
+            self.token = result
+            return (result, .loginSheet)
         }
     }
     /// Force user to Login by using AuthenticationServices
