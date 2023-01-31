@@ -137,7 +137,6 @@ public final class AuthenticationHandler: NSObject {
             authorizePath: "/auth/realms/++++++/protocol/openid-connect/auth",
             accessTokenPath: "/auth/realms/++++++/protocol/openid-connect/token",
             userInfoPath: "/auth/realms/++++++/protocol/openid-connect/userinfo",
-            callBackURL: "dk.++++.+++++.debug:/",
             callbackURLScheme: "dk.++++.+++++.debug",
             scopes: ["openid", "++++++"]
         )

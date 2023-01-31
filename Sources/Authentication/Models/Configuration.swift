@@ -18,7 +18,6 @@ public extension AuthenticationHandler {
     ///     authorizePath: "/auth/realms/++++++/protocol/openid-connect/auth",
     ///     accessTokenPath: "/auth/realms/++++++/protocol/openid-connect/token",
     ///     userInfoPath: "/auth/realms/++++++/protocol/openid-connect/userinfo",
-    ///     callBackURL: "dk.++++.+++++.debug:/",
     ///     callbackURLScheme: "dk.++++.+++++.debug",
     ///     scopes: ["openid", "++++++"]
     ///)
@@ -31,7 +30,6 @@ public extension AuthenticationHandler {
         ///   - authorizePath: Path for Authorization Api
         ///   - accessTokenPath: Path for Token Api
         ///   - userInfoPath: Path for UserInfo Api
-        ///   - callBackURL: Eider custom registered URL or Bundle ID
         ///   - callbackURLScheme: Eider custom registered Scheme or Bundle ID
         ///   - scopes: Array of scopes for using OAuth2
         ///
@@ -44,7 +42,6 @@ public extension AuthenticationHandler {
         ///     authorizePath: "/auth/realms/++++++/protocol/openid-connect/auth",
         ///     accessTokenPath: "/auth/realms/++++++/protocol/openid-connect/token",
         ///     userInfoPath: "/auth/realms/++++++/protocol/openid-connect/userinfo",
-        ///     callBackURL: "dk.++++.+++++.debug:/",
         ///     callbackURLScheme: "dk.++++.+++++.debug",
         ///     scopes: ["openid", "++++++"]
         ///)
@@ -55,7 +52,6 @@ public extension AuthenticationHandler {
             authorizePath: String,
             accessTokenPath: String,
             userInfoPath: String,
-            callBackURL: String,
             callbackURLScheme: String,
             scopes: [String]
         ) {
@@ -64,7 +60,6 @@ public extension AuthenticationHandler {
             self.authorizePath = authorizePath
             self.accessTokenPath = accessTokenPath
             self.userInfoPath = userInfoPath
-            self.callBackURL = callBackURL
             self.callbackURLScheme = callbackURLScheme
             self.scopes = scopes
             
@@ -79,7 +74,6 @@ public extension AuthenticationHandler {
         let authorizePath: String
         let accessTokenPath: String
         let userInfoPath: String
-        let callBackURL: String
         let callbackURLScheme: String
         let scopes: [String]
     }

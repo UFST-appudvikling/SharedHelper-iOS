@@ -41,7 +41,7 @@ extension AuthenticationHandler {
     func createAuthorizationURL() -> URL? {
         let queryItems = [
           URLQueryItem(name: "client_id", value: configuration.clientID),
-          URLQueryItem(name: "redirect_uri", value: self.configuration.callBackURL),
+          URLQueryItem(name: "redirect_uri", value: self.configuration.callbackURLScheme + "://"),
           URLQueryItem(name: "response_type", value: "code"),
           URLQueryItem(name: "scope", value: self.configuration.scopes.joined(separator: " ")),
           URLQueryItem(name: "code_challenge_method", value: "S256"),
@@ -75,7 +75,7 @@ extension AuthenticationHandler {
         
         var queryItems = [
           URLQueryItem(name: "code_verifier", value: self.configuration.codeVerifier),
-          URLQueryItem(name: "redirect_uri", value: self.configuration.callBackURL),
+          URLQueryItem(name: "redirect_uri", value: self.configuration.callbackURLScheme + "://"),
           URLQueryItem(name: "client_id", value: self.configuration.clientID),
         ]
         if let code = code {
