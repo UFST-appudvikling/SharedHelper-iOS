@@ -83,22 +83,30 @@ extension AuthenticationHandler {
         }
     }
     public struct AuthorizationsModel: Codable, Hashable {
+        public init(roles: [String]) {
+            self.roles = roles
+        }
+        
         let roles: [String]
     }
     public struct AzureModel: Codable, Hashable{
+        public init(name: String, email: String) {
+            self.name = name
+            self.email = email
+        }
+        
         let name: String
         let email: String
     }
     
     public struct AutomatedLogin: Decodable, Hashable {
-//        enum LoginType: Codable {
-//            case azure
-//            case dcs
-//        }
-//        let type: LoginType
+        public init(url: String, users: [AuthenticationHandler.TokenConfiguration]) {
+            self.url = url
+            self.users = users
+        }
+        
         let url: String
         let users: [TokenConfiguration]
-        
     }
     
 }
