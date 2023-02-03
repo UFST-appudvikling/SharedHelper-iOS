@@ -91,5 +91,6 @@ extension AuthenticationHandler {
         case loginSheet
         case keychain
         case refresh
+        case automatedLogin
     }
 }
