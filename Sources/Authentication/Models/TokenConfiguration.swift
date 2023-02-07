@@ -99,14 +99,14 @@ extension AuthenticationHandler {
         let email: String
     }
     
-    public struct AutomatedLogin: Decodable, Hashable {
-        public init(url: String, users: [AuthenticationHandler.TokenConfiguration]) {
+    public struct AutomatedLoginModel: Decodable, Hashable {
+        public init(url: String, user: AuthenticationHandler.TokenConfiguration) {
             self.url = url
-            self.users = users
+            self.user = user
         }
         
         let url: String
-        let users: [TokenConfiguration]
+        let user: TokenConfiguration
     }
     
 }

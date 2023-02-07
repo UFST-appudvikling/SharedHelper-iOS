@@ -7,17 +7,9 @@
 
 import SwiftUI
 extension AuthenticationHandler {
-    static func userSelectorHostingController(users: [TokenConfiguration], selectedUserHandler: @escaping (TokenConfiguration) -> ()) -> UIViewController {
-        UIHostingController(rootView: UserSelector(users: users, selectedUserHandler: selectedUserHandler))
-    }
     struct UserSelector: View {
-        private var selectedUserHandler: (TokenConfiguration) -> ()
         let users: [TokenConfiguration]
-        
-        init(users: [TokenConfiguration], selectedUserHandler: @escaping (TokenConfiguration) -> ()) {
-            self.users = users
-            self.selectedUserHandler = selectedUserHandler
-        }
+        @State var selectedUser: TokenConfiguration
 
         var body: some View {
             List(users, id: \.self) { user in
@@ -28,10 +20,9 @@ extension AuthenticationHandler {
                 }
                 .padding()
                 .onTapGesture {
-                    selectedUserHandler(user)
+                   selectedUser = user
                 }
             }
         }
     }
-    
 }
