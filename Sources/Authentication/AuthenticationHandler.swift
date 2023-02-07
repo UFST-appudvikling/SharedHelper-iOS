@@ -73,13 +73,13 @@ public final class AuthenticationHandler: NSObject, ObservableObject {
     /// ````
     /// import Authentication
     ///
-    /// let tokenConfiguration = AuthenticationHandler.TokenConfiguration(apiKey: "aLkgew457grv14dEG",
-    ///                                                                   clientID: "digital-logbog",
+    /// let tokenConfiguration = AuthenticationHandler.TokenConfiguration(apiKey: "xxxxxx",
+    ///                                                                   clientID: "xxxxxx",
     ///                                                                   azureOrDcs: "azure",
-    ///                                                                   nonce: "f6a331c8-ace5-4bbe-8015-6f957d1fbe78",
-    ///                                                                   azure: AuthenticationHandler.AzureModel(name: "w20", email:  "W20@BilletTest.onmicrosoft.com"),
-    ///                                                                   authorizations: AuthenticationHandler.AuthorizationsModel(roles:  ["IP.DigitalLogbog.Aktoer.Sagsbehandler.Kontrollant.PRG"]))
-    /// let loginModel = AuthenticationHandler.AutomatedLoginModel(url: "https://billetautomat-keycloak-dcs-plugin-master-test.ocpt.ccta.dk/auth/realms/test/automatedtest/test",
+    ///                                                                   nonce: "xxxxxx",
+    ///                                                                   azure: AuthenticationHandler.AzureModel(name: "w20", email:  "xxxxxx"),
+    ///                                                                   authorizations: AuthenticationHandler.AuthorizationsModel(roles:  ["xxxxxx"]))
+    /// let loginModel = AuthenticationHandler.AutomatedLoginModel(url: "https://xxxxxx/auth/realms/test/automatedtest/test",
     ///                                                            user: tokenConfiguration)
     ///
     /// authenticationHandler = AuthenticationHandler(automatedLoginModel: loginModel )
