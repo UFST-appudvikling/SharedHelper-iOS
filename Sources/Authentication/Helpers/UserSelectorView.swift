@@ -6,12 +6,12 @@
 //
 
 import SwiftUI
-extension AuthenticationHandler {
+public extension AuthenticationHandler {
     struct UserSelector: View {
-        let users: [TokenConfiguration]
-        @State var selectedUser: TokenConfiguration
-
-        var body: some View {
+        public let users: [TokenConfiguration]
+        @State public var selectedUser: TokenConfiguration
+        
+        public var body: some View {
             List(users, id: \.self) { user in
                 HStack {
                     Text(user.azure.name)
@@ -20,7 +20,7 @@ extension AuthenticationHandler {
                 }
                 .padding()
                 .onTapGesture {
-                   selectedUser = user
+                    selectedUser = user
                 }
             }
         }
