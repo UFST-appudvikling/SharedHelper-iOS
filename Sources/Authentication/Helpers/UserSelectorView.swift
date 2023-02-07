@@ -14,9 +14,9 @@ public extension AuthenticationHandler {
         public var body: some View {
             List(users, id: \.self) { user in
                 HStack {
-                    Text(user.azure.name)
+                    Text(user.azure?.name ?? user.authenticatedUser?.legalname ?? "")
                     Spacer()
-                    Text(user.azure.email)
+                    Text(user.azure?.email ?? "")
                 }
                 .padding()
                 .onTapGesture {
