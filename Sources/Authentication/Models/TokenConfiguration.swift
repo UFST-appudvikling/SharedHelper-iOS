@@ -13,15 +13,13 @@ extension AuthenticationHandler {
     /// ````
     /// AuthenticationHandler.TokenConfiguration
     /// (
-    ///     baseURL: "https://example.com",
-    ///     clientID: "+++++++",
-    ///     authorizePath: "/auth/realms/++++++/protocol/openid-connect/auth",
-    ///     accessTokenPath: "/auth/realms/++++++/protocol/openid-connect/token",
-    ///     userInfoPath: "/auth/realms/++++++/protocol/openid-connect/userinfo",
-    ///     callBackURL: "dk.++++.+++++.debug:/",
-    ///     callbackURLScheme: "dk.++++.+++++.debug",
-    ///     scopes: ["openid", "++++++"]
-    ///)
+    ///     apiKey: "+++++++++++",
+    ///     clientID: "+++++++++++",
+    ///     azureOrDcs: "azure",
+    ///     nonce: "+++++++++++",
+    ///     azure: AuthenticationHandler.AzureModel(name: "w20", email: "W20@BilletTest.onmicrosoft.com"),
+    ///     authorizations: AuthenticationHandler.AuthorizationsModel(roles: ["IP.DigitalLogbog.Aktoer.Sagsbehandler.Kontrollant.PRG"])
+    /// )
     /// ````
     public struct TokenConfiguration: Codable, Hashable {
         public static func == (lhs: AuthenticationHandler.TokenConfiguration, rhs: AuthenticationHandler.TokenConfiguration) -> Bool {
