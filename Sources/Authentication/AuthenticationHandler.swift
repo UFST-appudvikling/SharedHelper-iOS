@@ -62,13 +62,30 @@ public final class AuthenticationHandler: NSObject, ObservableObject {
     ///     contextProvider: contextProvider ?? ASPresentationAnchor()
     /// )
     /// ````
-    /// - Parameter configuration: The only way you can using this lib, look at example
+    /// - Parameter configuration: One way you can using this lib, look at example
     /// - Parameter contextProvider: Provide a window to show the login, look at example
     public init(configuration: Configuration, contextProvider: ASPresentationAnchor) {
         self.configuration = configuration
         self.contextProvider = contextProvider
         self.loginType = .manual
     }
+    /// - Example:
+    /// ````
+    /// import Authentication
+    ///
+    /// let tokenConfiguration = AuthenticationHandler.TokenConfiguration(apiKey: "aLkgew457grv14dEG",
+    ///                                                                   clientID: "digital-logbog",
+    ///                                                                   azureOrDcs: "azure",
+    ///                                                                   nonce: "f6a331c8-ace5-4bbe-8015-6f957d1fbe78",
+    ///                                                                   azure: AuthenticationHandler.AzureModel(name: "w20", email:  "W20@BilletTest.onmicrosoft.com"),
+    ///                                                                   authorizations: AuthenticationHandler.AuthorizationsModel(roles:  ["IP.DigitalLogbog.Aktoer.Sagsbehandler.Kontrollant.PRG"]))
+    /// let loginModel = AuthenticationHandler.AutomatedLoginModel(url: "https://billetautomat-keycloak-dcs-plugin-master-test.ocpt.ccta.dk/auth/realms/test/automatedtest/test",
+    ///                                                            user: tokenConfiguration)
+    ///
+    /// authenticationHandler = AuthenticationHandler(automatedLoginModel: loginModel )
+    /// ````
+    /// - Parameter automatedLoginModel: One way you can using this lib, look at example
+
     public init(automatedLoginModel: AutomatedLoginModel) {
         self.configuration = nil
         self.contextProvider = nil
