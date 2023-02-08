@@ -25,6 +25,7 @@ public final class AuthenticationHandler: NSObject {
     // MARK: Properties
     internal let configuration: Configuration
     internal let contextProvider: ASPresentationAnchor
+    internal var sheetIsActive: Bool = false
     // MARK: Methods
     /// You should use this method to be able to start using ``AuthenticationHandler``
     ///
@@ -170,31 +171,31 @@ extension AuthenticationHandler {
 
     // MARK: Networking Methods
     private func getAuthorizationCode () async -> Result<String, Error> {
-        return await withCheckedContinuation { continuation in
+        return await withCheckedContinuation { [weak self] continuation in
             
             guard let url = createAuthorizationURL() else { return continuation.resume(returning: .failure(CustomError.invalidURL)) }
-            
-            let authenticationSession = ASWebAuthenticationSession(url: url, callbackURLScheme: self.configuration.callbackURLScheme) { callbackURL, error in
-                if let error = error {
-                    continuation.resume(returning: .failure(CustomError.dissmissLogin(error: error.localizedDescription)))
-                } else {
-                    if
-                        let callbackURL = callbackURL,
-                        let queryItems = URLComponents(string: callbackURL.absoluteString)?.queryItems,
-                        let code = queryItems.first(where: { $0.name == "code" })?.value {
-                        continuation.resume(returning: .success(code))
+            if !sheetIsActive {
+                let authenticationSession = ASWebAuthenticationSession(url: url, callbackURLScheme: self?.configuration.callbackURLScheme) { [weak self] callbackURL, error in
+                    self?.sheetIsActive = false
+                    if let error = error {
+                        continuation.resume(returning: .failure(CustomError.dissmissLogin(error: error.localizedDescription)))
                     } else {
-                        continuation.resume(returning: .failure(CustomError.invalidData))
+                        if
+                            let callbackURL = callbackURL,
+                            let queryItems = URLComponents(string: callbackURL.absoluteString)?.queryItems,
+                            let code = queryItems.first(where: { $0.name == "code" })?.value {
+                            continuation.resume(returning: .success(code))
+                        } else {
+                            continuation.resume(returning: .failure(CustomError.invalidData))
+                        }
                     }
                 }
+                authenticationSession.presentationContextProvider = self
+                authenticationSession.prefersEphemeralWebBrowserSession = true
+                sheetIsActive = authenticationSession.start()
+            } else {
+                continuation.resume(returning: .failure(CustomError.internalError("It's already there")))
             }
-            authenticationSession.presentationContextProvider = self
-            authenticationSession.prefersEphemeralWebBrowserSession = true
-            
-            if !authenticationSession.start() {
-                continuation.resume(returning: .failure(CustomError.internalError("Failed to start ASWebAuthenticationSession")))
-            }
-            
         }
     }
     private func getToken(authorizationCode: String? = nil, refreshToken: String? = nil) async throws -> TokenModel {
