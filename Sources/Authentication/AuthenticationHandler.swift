@@ -175,7 +175,7 @@ extension AuthenticationHandler {
             
             guard let url = createAuthorizationURL() else { return continuation.resume(returning: .failure(CustomError.invalidURL)) }
             if !sheetIsActive {
-                let authenticationSession = ASWebAuthenticationSession(url: url, callbackURLScheme: self?.configuration.callbackURLScheme) { [unowned self] callbackURL, error in
+                let authenticationSession = ASWebAuthenticationSession(url: url, callbackURLScheme: self?.configuration.callbackURLScheme) { [weak self] callbackURL, error in
                     self?.sheetIsActive = false
                     if let error = error {
                         continuation.resume(returning: .failure(CustomError.dissmissLogin(error: error.localizedDescription)))
@@ -196,12 +196,6 @@ extension AuthenticationHandler {
             } else {
                 continuation.resume(returning: .failure(CustomError.internalError("It's already there")))
             }
-//
-//
-//            if !sheetIsActive {
-//                continuation.resume(returning: .failure(CustomError.internalError("Failed to start ASWebAuthenticationSession")))
-//            }
-            
         }
     }
     private func getToken(authorizationCode: String? = nil, refreshToken: String? = nil) async throws -> TokenModel {
