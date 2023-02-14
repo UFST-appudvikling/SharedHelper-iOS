@@ -122,7 +122,7 @@ private extension SuccessOverlayView {
                 }
             if showAlert {
                 alertView
-                    // Fix so voiceover stays on the "message" while success overlay is shown
+                // Fix so voiceover stays on the "message" while success overlay is shown
                     .if(self.isModal) {
                         $0.accessibility(addTraits: .isModal)
                     }

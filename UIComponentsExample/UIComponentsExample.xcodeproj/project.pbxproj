@@ -7,17 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		28E90C23299BA48D00CE3EA5 /* UIComponentsExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E90C22299BA48D00CE3EA5 /* UIComponentsExampleApp.swift */; };
-		28E90C25299BA48D00CE3EA5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E90C24299BA48D00CE3EA5 /* ContentView.swift */; };
+		28075205299BCFC7009A8D6B /* FeedbackExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28075204299BCFC7009A8D6B /* FeedbackExample.swift */; };
+		28075207299BCFCE009A8D6B /* SuccessOverlayExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28075206299BCFCE009A8D6B /* SuccessOverlayExample.swift */; };
+		28E90C23299BA48D00CE3EA5 /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E90C22299BA48D00CE3EA5 /* AppView.swift */; };
 		28E90C27299BA48E00CE3EA5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28E90C26299BA48E00CE3EA5 /* Assets.xcassets */; };
 		28E90C2B299BA48E00CE3EA5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28E90C2A299BA48E00CE3EA5 /* Preview Assets.xcassets */; };
 		28E90C34299BA70200CE3EA5 /* UIComponents in Frameworks */ = {isa = PBXBuildFile; productRef = 28E90C33299BA70200CE3EA5 /* UIComponents */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		28075204299BCFC7009A8D6B /* FeedbackExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackExample.swift; sourceTree = "<group>"; };
+		28075206299BCFCE009A8D6B /* SuccessOverlayExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessOverlayExample.swift; sourceTree = "<group>"; };
 		28E90C1F299BA48D00CE3EA5 /* UIComponentsExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UIComponentsExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		28E90C22299BA48D00CE3EA5 /* UIComponentsExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIComponentsExampleApp.swift; sourceTree = "<group>"; };
-		28E90C24299BA48D00CE3EA5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		28E90C22299BA48D00CE3EA5 /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
 		28E90C26299BA48E00CE3EA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		28E90C28299BA48E00CE3EA5 /* UIComponentsExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = UIComponentsExample.entitlements; sourceTree = "<group>"; };
 		28E90C2A299BA48E00CE3EA5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -36,6 +38,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		28075203299BCFBB009A8D6B /* Examples */ = {
+			isa = PBXGroup;
+			children = (
+				28075204299BCFC7009A8D6B /* FeedbackExample.swift */,
+				28075206299BCFCE009A8D6B /* SuccessOverlayExample.swift */,
+			);
+			path = Examples;
+			sourceTree = "<group>";
+		};
 		28E90C16299BA48D00CE3EA5 = {
 			isa = PBXGroup;
 			children = (
@@ -57,8 +68,8 @@
 		28E90C21299BA48D00CE3EA5 /* UIComponentsExample */ = {
 			isa = PBXGroup;
 			children = (
-				28E90C22299BA48D00CE3EA5 /* UIComponentsExampleApp.swift */,
-				28E90C24299BA48D00CE3EA5 /* ContentView.swift */,
+				28075203299BCFBB009A8D6B /* Examples */,
+				28E90C22299BA48D00CE3EA5 /* AppView.swift */,
 				28E90C26299BA48E00CE3EA5 /* Assets.xcassets */,
 				28E90C28299BA48E00CE3EA5 /* UIComponentsExample.entitlements */,
 				28E90C29299BA48E00CE3EA5 /* Preview Content */,
@@ -154,8 +165,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				28E90C25299BA48D00CE3EA5 /* ContentView.swift in Sources */,
-				28E90C23299BA48D00CE3EA5 /* UIComponentsExampleApp.swift in Sources */,
+				28E90C23299BA48D00CE3EA5 /* AppView.swift in Sources */,
+				28075207299BCFCE009A8D6B /* SuccessOverlayExample.swift in Sources */,
+				28075205299BCFC7009A8D6B /* FeedbackExample.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -14,7 +14,7 @@ public struct FeedbackStyling {
     let bodyTextColor: Color
     let borderColor: Color
     let backgroundColor: Color
-
+    
     public init(
         primaryButtonColor: Color = Color(#colorLiteral(red: 0, green: 0.5659442544, blue: 0.287532568, alpha: 1)),
         secondaryColor: Color = Color(#colorLiteral(red: 0.1018853113, green: 0.1138664857, blue: 0.3018276095, alpha: 1)),
@@ -59,7 +59,7 @@ public extension View {
         submitFeedbackCallback: @escaping (_ providedFeedback: String) -> Void
     ) -> some View {
         modifier(
-            RatingAlertViewModifier(
+            FeedbackViewModifier(
                 showFeedback: showFeedback,
                 styling: styling,
                 localization: localization,
@@ -70,7 +70,7 @@ public extension View {
 }
 
 
-struct RatingAlertViewModifier: ViewModifier {
+struct FeedbackViewModifier: ViewModifier {
     
     @Binding var showFeedback: Bool
     let styling: FeedbackStyling
@@ -81,7 +81,7 @@ struct RatingAlertViewModifier: ViewModifier {
         ZStack {
             content
             if showFeedback {
-                RatingAlertView2(showFeedbackOverlay: $showFeedback, submitFeedbackCallback: submitFeedbackCallback, localization: localization, styling: styling)
+                FeedbackView(showFeedbackOverlay: $showFeedback, submitFeedbackCallback: submitFeedbackCallback, localization: localization, styling: styling)
             }
         }
         .animation(.default, value: showFeedback)
@@ -89,7 +89,7 @@ struct RatingAlertViewModifier: ViewModifier {
 }
 
 
-struct RatingAlertView2: View {
+struct FeedbackView: View {
     
     @Binding var showFeedbackOverlay: Bool
     let submitFeedbackCallback: (_ providedFeedback: String) -> Void
@@ -107,7 +107,7 @@ struct RatingAlertView2: View {
     }
 }
 
-private extension RatingAlertView2 {
+private extension FeedbackView {
     
     var content: some View {
         ZStack {
@@ -200,9 +200,9 @@ private extension RatingAlertView2 {
                 .background(styling.backgroundColor)
             HStack {
                 Button {
-                        self.textfieldIsFocused = false
-                        self.showSuccess = true
-                        self.submitFeedbackCallback(inputTextField)
+                    self.textfieldIsFocused = false
+                    self.showSuccess = true
+                    self.submitFeedbackCallback(inputTextField)
                 } label: {
                     Text(localization.primaryButtonText)
                         .frame(maxWidth: .infinity)
