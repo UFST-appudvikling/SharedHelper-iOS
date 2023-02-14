@@ -7,32 +7,104 @@
 
 import SwiftUI
 
+public struct SuccessOverlayStyling {
+    
+    let messageFont: Font
+    let messageColor: Color
+    let checkmarkColor: Color
+    
+    public init(
+        messageFont: Font = Font.academySans(size: 18, type: .skat_demiBold),
+        messageColor: Color = Color(#colorLiteral(red: 0.1018853113, green: 0.1138664857, blue: 0.3018276095, alpha: 1)),
+        checkmarkColor: Color = Color(#colorLiteral(red: 0, green: 0.5058823529, blue: 0.2235294118, alpha: 1))
+    ) {
+        self.messageFont = messageFont
+        self.messageColor = messageColor
+        self.checkmarkColor = checkmarkColor
+    }
+}
+
+public extension View {
+    /// Success overlay animation shown before navigation
+    /// - Parameter message: Message displayed on success overlay
+    /// - Parameter showSuccessOverlay: Decides when overlay should be shown
+    /// - Parameter delayUntilNavigationCallback: Delay time before navigationCallback is triggered, default value is 2.5 seconds
+    /// - Parameter navigationCallback: Trigger when parent view should navigate to next step in flow
+    func successOverlay(
+        message: String,
+        showSuccessOverlay: Binding<Bool>,
+        delayUntilNavigationCallback: Double = 2.5,
+        styling: SuccessOverlayStyling = .init(),
+        navigationCallback: @escaping () -> Void
+    ) -> some View {
+        modifier(
+            SuccessOverlayViewModifier(
+                showSuccessOverlay: showSuccessOverlay,
+                navigateCallback: navigationCallback,
+                message: message,
+                animationDelay: delayUntilNavigationCallback,
+                styling: styling
+            )
+        )
+    }
+}
+
+
+struct SuccessOverlayViewModifier: ViewModifier {
+    
+    @Binding var showSuccessOverlay: Bool
+    let navigateCallback: () -> Void
+    let message: String
+    let animationDelay: Double
+    let styling: SuccessOverlayStyling
+    
+    func body(content: Content) -> some View {
+        ZStack {
+            content
+            if showSuccessOverlay {
+                SuccessOverlayView(message: message, styling: styling)
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + animationDelay) {
+                            navigateCallback()
+                        }
+                    }
+            }
+        }
+    }
+}
+
+
 struct SuccessOverlayView: View {
     
     let message: String
+    let styling: SuccessOverlayStyling
     @State private var showAlert = false
     @State private var alertDidAppear = false
     @State private var isModal = true
     @AccessibilityFocusState private var isFocused: Bool
     
-    internal init(message: String) {
+    init(message: String, styling: SuccessOverlayStyling = .init()) {
         self.message = message
+        self.styling = styling
     }
     
     public var body: some View {
         content
-            .onDisappear(perform: {
+            .onDisappear {
                 self.isFocused = false
                 self.isModal = false
-            })
-            .onChange(of: showAlert, perform: { newValue in
-                if showAlert {
-                    //A delay is needed here to get the accessibility focus working
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        self.isFocused = true
+            }
+            .onChange(
+                of: showAlert,
+                perform: { newValue in
+                    if showAlert {
+                        //A delay is needed here to get the accessibility focus working
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            self.isFocused = true
+                        }
                     }
                 }
-            })
+            )
     }
 }
 
@@ -51,9 +123,9 @@ private extension SuccessOverlayView {
             if showAlert {
                 alertView
                     // Fix so voiceover stays on the "message" while success overlay is shown
-//                    .if(self.isModal) {
-//                        $0.accessibility(addTraits: .isModal)
-//                    }
+                    .if(self.isModal) {
+                        $0.accessibility(addTraits: .isModal)
+                    }
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             withAnimation(.spring(response: 0.7, dampingFraction: 0.925, blendDuration: 10)) {
@@ -77,82 +149,16 @@ private extension SuccessOverlayView {
     
     var alertView: some View {
         VStack(alignment: .center, spacing: 20) {
-            Image(systemName: "checkmark")
+            Image("Success", bundle: .myModule)
                 .resizable()
                 .frame(width: 40, height: 40)
+                .foregroundColor(styling.checkmarkColor)
                 .scaleEffect(alertDidAppear ? 1 : 0)
             Text(message)
-                .font(Font.academySans(size: 18, type: .skat_demiBold))
-//                .foregroundColor(.esHeader)
+                .font(styling.messageFont)
+                .foregroundColor(styling.messageColor)
                 .multilineTextAlignment(.center)
                 .accessibilityFocused($isFocused)
         }
     }
 }
-
-struct SuccessOverlayViewModifier: ViewModifier {
-    
-    @Binding var showSuccessOverlay: Bool
-    let navigateCallback: () -> Void
-    let message: String
-    let animationDelay: Double
-    
-    func body(content: Content) -> some View {
-        ZStack {
-            content
-            if showSuccessOverlay {
-                SuccessOverlayView(message: message)
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + animationDelay) {
-                            navigateCallback()
-                        }
-                    }
-            }
-        }
-    }
-}
-
-public extension View {
-    /// Success overlay animation shown before navigation
-    /// - Parameter message: Message displayed on success overlay
-    /// - Parameter showSuccessOverlay: Decides when overlay should be shown
-    /// - Parameter navigationCallback: Trigger when parent view should navigate to next step in flow
-    /// - Parameter animationDelay: Delay time before navigationCallback is triggered, default value is 2.5 seconds
-    func successOverlay(
-        message: String,
-        showSuccessOverlay: Binding<Bool>,
-        navigationCallback: @escaping () -> Void,
-        animationDelay: Double = 2.5
-    ) -> some View {
-        modifier(
-            SuccessOverlayViewModifier(
-                showSuccessOverlay: showSuccessOverlay,
-                navigateCallback: navigationCallback,
-                message: message,
-                animationDelay: animationDelay
-            )
-        )
-    }
-}
-
-//private struct previewHelper: View {
-//    
-//    @State var showSuccessOverlay
-//    
-//    private body: some View {
-//        
-//    }
-//}
-//
-//struct SuccessOverlay_Previews: PreviewProvider {
-//    static var previews: some View {
-//            NavigationView {
-//                Text("Text")
-//                    .successOverlay(
-//                        message: "Message",
-//                        showSuccessOverlay: .constant(.),
-//                        navigationCallback: {  }
-//                    )
-//            }
-//        }
-//}

@@ -7,6 +7,46 @@
 
 import SwiftUI
 
+public struct FeedbackStyling {
+    
+    let primaryButtonColor: Color
+    let secondaryColor: Color
+    let bodyTextColor: Color
+    let borderColor: Color
+    let backgroundColor: Color
+
+    public init(
+        primaryButtonColor: Color = Color(#colorLiteral(red: 0, green: 0.5659442544, blue: 0.287532568, alpha: 1)),
+        secondaryColor: Color = Color(#colorLiteral(red: 0.1018853113, green: 0.1138664857, blue: 0.3018276095, alpha: 1)),
+        bodyTextColor: Color = Color(#colorLiteral(red: 0.262745098, green: 0.262745098, blue: 0.3882352941, alpha: 1)),
+        borderColor: Color = Color(#colorLiteral(red: 0.262745098, green: 0.262745098, blue: 0.3882352941, alpha: 1)),
+        backgroundColor: Color = Color(#colorLiteral(red: 1, green: 0.9999999404, blue: 0.9999999404, alpha: 1))
+    ) {
+        self.primaryButtonColor = primaryButtonColor
+        self.secondaryColor = secondaryColor
+        self.bodyTextColor = bodyTextColor
+        self.borderColor = borderColor
+        self.backgroundColor = backgroundColor
+    }
+}
+
+public struct FeedbackLocalization {
+    
+    let header: String
+    let boxTitle: String
+    let privacyPolicyDisclamer: String
+    let primaryButtonText: String
+    let successMessage: String
+    
+    public init(header: String, boxTitle: String, privacyPolicyDisclamer: String, primaryButtonText: String, successMessage: String) {
+        self.header = header
+        self.boxTitle = boxTitle
+        self.privacyPolicyDisclamer = privacyPolicyDisclamer
+        self.primaryButtonText = primaryButtonText
+        self.successMessage = successMessage
+    }
+}
+
 public extension View {
     /// Rating alert
     /// - Parameter title: title displayed on rating pop up
@@ -14,15 +54,15 @@ public extension View {
     /// - Parameter showRatingOverlay: Decides when overlay should be shown
     func feedback(
         showFeedback: Binding<Bool>,
-        primaryColor: UIColor,
-        secondaryColor: UIColor,
-        submitFeedbackCallback: @escaping (_ input: String) -> Void
+        localization: FeedbackLocalization,
+        styling: FeedbackStyling = .init(),
+        submitFeedbackCallback: @escaping (_ providedFeedback: String) -> Void
     ) -> some View {
         modifier(
             RatingAlertViewModifier(
                 showFeedback: showFeedback,
-                primaryColor: primaryColor,
-                secondaryColor: secondaryColor,
+                styling: styling,
+                localization: localization,
                 submitFeedbackCallback: submitFeedbackCallback
             )
         )
@@ -33,15 +73,15 @@ public extension View {
 struct RatingAlertViewModifier: ViewModifier {
     
     @Binding var showFeedback: Bool
-    let primaryColor: UIColor
-    let secondaryColor: UIColor
+    let styling: FeedbackStyling
+    let localization: FeedbackLocalization
     let submitFeedbackCallback: (_ input: String) -> Void
     
     func body(content: Content) -> some View {
         ZStack {
             content
             if showFeedback {
-                RatingAlertView2(showFeedbackOverlay: $showFeedback, submitFeedbackCallback: submitFeedbackCallback)
+                RatingAlertView2(showFeedbackOverlay: $showFeedback, submitFeedbackCallback: submitFeedbackCallback, localization: localization, styling: styling)
             }
         }
         .animation(.default, value: showFeedback)
@@ -52,15 +92,14 @@ struct RatingAlertViewModifier: ViewModifier {
 struct RatingAlertView2: View {
     
     @Binding var showFeedbackOverlay: Bool
-    let submitFeedbackCallback: (_ input: String) -> Void
+    let submitFeedbackCallback: (_ providedFeedback: String) -> Void
     @State var inputTextField: String = ""
     @FocusState var textfieldIsFocused: Bool
     @State var showSuccess: Bool = false
     
-    internal init(showFeedbackOverlay: Binding<Bool>, submitFeedbackCallback: @escaping (_ input: String) -> Void) {
-        self._showFeedbackOverlay = showFeedbackOverlay
-        self.submitFeedbackCallback = submitFeedbackCallback
-    }
+    let localization: FeedbackLocalization
+    let styling: FeedbackStyling
+    
     
     public var body: some View {
         content
@@ -74,7 +113,7 @@ private extension RatingAlertView2 {
         ZStack {
             backgroundView
             if showSuccess {
-                SuccessOverlayView(message: "Tusinde tak for din feedback!")
+                SuccessOverlayView(message: self.localization.successMessage)
                     .onAppear {
                         Task {
                             try await Task.sleep(nanoseconds: 3_000_000_000)
@@ -102,7 +141,7 @@ private extension RatingAlertView2 {
                                         .resizable()
                                         .frame(width: 14, height: 14)
                                         .padding(.all, 20)
-//                                        .foregroundColor(.esHeader)
+                                        .foregroundColor(styling.secondaryColor)
                                 }
                             }
                             Spacer()
@@ -139,9 +178,9 @@ private extension RatingAlertView2 {
     
     var alertView: some View {
         VStack(alignment: .center, spacing: 20) {
-            Text("Hvordan kan vi forbedre appen?")
-//                .skatFont(.heading2)
-//                .foregroundColor(Color.esHeader)
+            Text(localization.header)
+                .font(Font.academySans(size: 28, type: .skat_bold))
+                .foregroundColor(styling.secondaryColor)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.vertical, 56)
@@ -156,24 +195,23 @@ private extension RatingAlertView2 {
                 .onAppear {
                     self.textfieldIsFocused = true
                 }
-//                .skatFont(.labelBold1)
-//                .foregroundColor(.esBodyText)
-                .background(Color.white)
-            //
+                .font(Font.academySans(size: 17, type: .skat_regular))
+                .foregroundColor(styling.bodyTextColor)
+                .background(styling.backgroundColor)
             HStack {
                 Button {
                         self.textfieldIsFocused = false
                         self.showSuccess = true
                         self.submitFeedbackCallback(inputTextField)
                 } label: {
-                    Text("Indsend")
+                    Text(localization.primaryButtonText)
                         .frame(maxWidth: .infinity)
                 }
                 .disabled(inputTextField.trimmingCharacters(in: .whitespaces).isEmpty)
-//                .skatFont(.labelBold1)
+                .font(Font.academySans(size: 17, type: .skat_bold))
                 .padding(.vertical, 14)
                 .frame(maxWidth: .infinity)
-//                .background(Color.esActionPrimary)
+                .background(styling.primaryButtonColor)
                 .foregroundColor(.white)
                 .cornerRadius(4)
                 .opacity(inputTextField.trimmingCharacters(in: .whitespaces).isEmpty ? 0.6 : 1.0)
@@ -182,26 +220,5 @@ private extension RatingAlertView2 {
         }
     }
 }
-
-private struct FeedbackPreviewHelper: View {
-    @State var showFeedback = false
-    var body: some View {
-        Button("Test overlay") {
-            self.showFeedback = true
-        }
-        .feedback(
-            showFeedback: $showFeedback,
-            primaryColor: .red,
-            secondaryColor: .cyan
-        ) { _ in }
-    }
-}
-
-struct Feedback_Previews: PreviewProvider {
-    static var previews: some View {
-        FeedbackPreviewHelper()
-    }
-}
-
 
 

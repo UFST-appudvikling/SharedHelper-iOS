@@ -37,14 +37,16 @@ struct SuccessOverlayExample: View {
     @State var showSuccessOverlay: Bool = false
     
     var body: some View {
-        Button("Show success") {
-            showSuccessOverlay = true
+        List {
+            Button("Show success") {
+                showSuccessOverlay = true
+            }
         }
+        .navigationTitle("Success overlay")
         .successOverlay(
-            message: "message",
+            message: "Thanks for using UIComponents",
             showSuccessOverlay: $showSuccessOverlay
         ) {
-            //Navigation callback triggered here
             showSuccessOverlay = false
         }
     }
@@ -55,14 +57,24 @@ struct FeedbackExample: View {
     
     @State var showFeedback: Bool = false
     
+    let localization = FeedbackLocalization(
+        header: "Hvordan kan vi forbedre appen?",
+        boxTitle: "Skriv dine forbedringsidéer her",
+        privacyPolicyDisclamer: "Ingen personfølsomme oplysninger i denne boks. ",
+        primaryButtonText: "Indsend",
+        successMessage: "Tusind tak for din feedback!"
+    )
+    
     var body: some View {
-        Button("Show feedback") {
-            showFeedback = true
+        List {
+            Button("Show feedback") {
+                showFeedback = true
+            }
         }
+        .navigationTitle("Feedback")
         .feedback(
             showFeedback: $showFeedback,
-            primaryColor: .cyan,
-            secondaryColor: .red
+            localization: localization
         ) { providedFeedback in
             // Submit feedback callback triggered
         }

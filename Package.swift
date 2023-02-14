@@ -22,7 +22,7 @@ let package = Package(
         .library(name: "VersionCheck",
                  targets: ["VersionCheck"]),
         .library(name: "UIComponents",
-                 targets: ["UIComponents"]),
+                 targets: ["UIComponents"])
     ],
     dependencies: [
         .package(
@@ -60,7 +60,8 @@ let package = Package(
             name: "UIComponents",
             dependencies: [],
             resources: [
-                .process("Fonts")
+                .process("Resources/Font/AcademySans"),
+                .process("Resources/Assets/Icons")
             ]
         ),
         .testTarget(
