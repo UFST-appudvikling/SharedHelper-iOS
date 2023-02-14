@@ -11,6 +11,7 @@ import UIComponents
 struct FeedbackExample: View {
     
     @State var showFeedback: Bool = false
+    @State var primaryButtonColor: Color = .cyan
     
     let localization = FeedbackLocalization(
         header: "Hvordan kan vi forbedre appen?",
@@ -22,6 +23,9 @@ struct FeedbackExample: View {
     
     var body: some View {
         List {
+            Section("This UI Compnenten is developed with reusability and customizability in mind.\nFor example you can change color of the primary button if you want to.") {
+                ColorPicker("Change color 😎", selection: $primaryButtonColor)
+            }
             Button("Start feedback") {
                 showFeedback = true
             }
@@ -29,7 +33,8 @@ struct FeedbackExample: View {
         .navigationTitle("Feedback")
         .feedback(
             showFeedback: $showFeedback,
-            localization: localization
+            localization: localization,
+            styling: .init(primaryButtonColor: primaryButtonColor)
         ) { providedFeedback in
             
         }

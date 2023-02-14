@@ -137,6 +137,7 @@ private extension SuccessOverlayView {
                     .padding(50)
                     .background(Color.white)
                     .cornerRadius(4)
+                    .padding(10)
             }
         }
     }
