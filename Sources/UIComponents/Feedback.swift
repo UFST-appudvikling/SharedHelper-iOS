@@ -55,9 +55,9 @@ public extension View {
      - Parameter showFeedback: Decides when overlay should be shown
      - Parameter localization: Localization strings
      - Parameter styling: Customized UI styling
-     - Parameter onCloseButtonTapCallback: Triggered when user taps on close button.
+     - Parameter onCloseButtonTap: Triggered when user taps on close button.
          Note that this callback should only be used for analytics tracking since the navigation mechanismback to the app is handled in the modifier itself
-     - Parameter submitFeedbackCallback: Triggered when the user submits feedback
+     - Parameter submitFeedback: Triggered when the user submits feedback
      */
     
     func feedback(
