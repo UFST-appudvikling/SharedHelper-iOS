@@ -144,7 +144,7 @@ private extension FeedbackView {
                         }
                     }
             } else {
-                alertView
+                feedbackView
                     .padding(24)
                     .background(Color.white)
                     .cornerRadius(4)
@@ -184,7 +184,6 @@ private extension FeedbackView {
         }
     }
     
-    @ViewBuilder
     var backgroundView: some View {
             Rectangle()
                 .ignoresSafeArea()
@@ -192,15 +191,17 @@ private extension FeedbackView {
                 .opacity(0.2)
     }
     
-    var alertView: some View {
-        VStack(alignment: .center, spacing: 20) {
+    var feedbackView: some View {
+        VStack(alignment: .leading, spacing: 16) {
             Text(localization.header)
                 .font(Font.academySans(size: 28, type: .skat_bold))
                 .foregroundColor(styling.secondaryColor)
-                .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-                .padding(.vertical, 56)
-                .padding(.horizontal, 20)
+                .frame(maxWidth: .infinity)
+                .multilineTextAlignment(.center)
+            Text(localization.boxTitle)
+                .font(Font.academySans(size: 17, type: .skat_regular))
+                .foregroundColor(styling.secondaryColor)
             TextEditor(text: $inputTextField)
                 .padding(.all, 10)
                 .focused($textfieldIsFocused)
@@ -214,6 +215,9 @@ private extension FeedbackView {
                 .font(Font.academySans(size: 17, type: .skat_regular))
                 .foregroundColor(styling.bodyTextColor)
                 .background(styling.backgroundColor)
+            Text(localization.privacyPolicyDisclamer)
+                .font(Font.academySans(size: 11, type: .skat_regular))
+                .foregroundColor(styling.secondaryColor)
             HStack {
                 Button {
                     self.textfieldIsFocused = false
@@ -237,4 +241,14 @@ private extension FeedbackView {
     }
 }
 
-
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        FeedbackView(showFeedbackOverlay: .constant(true), submitFeedback: { _ in }, onCloseButtonTap: {}, localization: FeedbackLocalization(
+            header: "Hvordan kan vi forbedre appen?",
+            boxTitle: "Skriv dine forbedringsidéer her",
+            privacyPolicyDisclamer: "Ingen personfølsomme oplysninger i denne boks. ",
+            primaryButtonText: "Indsend",
+            successMessage: "Tusind tak for din feedback!"
+        ), styling: .init())
+    }
+}

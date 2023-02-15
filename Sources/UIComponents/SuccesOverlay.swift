@@ -103,7 +103,7 @@ struct SuccessOverlayView: View {
                 of: showAlert,
                 perform: { newValue in
                     if showAlert {
-                        //A delay is needed here to get the accessibility focus working
+                        // A delay is needed here to get the accessibility focus working
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             self.isFocused = true
                         }
