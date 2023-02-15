@@ -7,7 +7,7 @@
 
 import Foundation
 extension AuthenticationHandler {
-    func sendRequest<Response: Codable>(request: URLRequest, responseType: Response.Type?) async throws -> Response? {
+    func sendRequest<Response: Codable>(request: URLRequest) async throws -> Response? {
         do {
             let (data, response) = try await URLSession.shared.data(for: request, delegate: nil)
             guard let response = response as? HTTPURLResponse else {
@@ -21,8 +21,7 @@ extension AuthenticationHandler {
                 } else {
                     let decoder = JSONDecoder()
                     decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    guard let responseType = responseType,
-                          let decodedResponse = try? decoder.decode(responseType, from: data)
+                    guard let decodedResponse = try? decoder.decode(Response.self, from: data)
                     else {
                         throw CustomError.decodingError
                     }

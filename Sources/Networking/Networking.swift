@@ -9,7 +9,7 @@ import Foundation
 
 /// NetworkingProtocol: This is where the method that executes the generic requests is located.
 public protocol NetworkingProtocol {
-    func sendRequest<Response: Codable>(request: URLRequest, responseType: Response.Type?) async throws -> Response?
+    func sendRequest<Response: Codable>(request: URLRequest) async throws -> Response?
 }
 
 
@@ -26,7 +26,7 @@ public final class Networking: NetworkingProtocol {
 
 public extension NetworkingProtocol {
     @discardableResult
-    func sendRequest<Response: Codable>(request: URLRequest, responseType: Response.Type?) async throws -> Response? {
+    func sendRequest<Response: Codable>(request: URLRequest) async throws -> Response? {
         do {
             let (data, response) = try await URLSession.shared.data(for: request, delegate: nil)
             guard let response = response as? HTTPURLResponse else {
@@ -41,8 +41,7 @@ public extension NetworkingProtocol {
                     let decoder = JSONDecoder()
                     // allows the conversion of the Date data type and adds a Z on the Date
                     decoder.dateDecodingStrategy = .iso8601
-                    guard let responseType = responseType,
-                          let decodedResponse = try? decoder.decode(responseType, from: data) else { throw NetworkingError.decodingError }
+                    guard let decodedResponse = try? decoder.decode(Response.self, from: data) else { throw NetworkingError.decodingError }
                     return decodedResponse
                 }
             case 401:
