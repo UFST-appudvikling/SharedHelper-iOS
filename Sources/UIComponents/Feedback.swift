@@ -199,6 +199,7 @@ private extension FeedbackView {
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity)
                 .multilineTextAlignment(.center)
+                .padding(.top, 30)
             Text(localization.boxTitle)
                 .font(Font.academySans(size: 17, type: .skat_regular))
                 .foregroundColor(styling.secondaryColor)
