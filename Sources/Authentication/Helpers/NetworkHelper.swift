@@ -39,7 +39,7 @@ extension AuthenticationHandler {
 
 extension AuthenticationHandler {
     func createAuthorizationURL() -> URL? {
-        guard let configuration = configuration else { return nil }
+        guard let configuration = configuration, let accessTokenURL = URL(string: configuration.baseURL + configuration.authorizePath) else { return nil }
 
         let queryItems = [
           URLQueryItem(name: "client_id", value: configuration.clientID),
@@ -49,7 +49,6 @@ extension AuthenticationHandler {
           URLQueryItem(name: "code_challenge_method", value: "S256"),
           URLQueryItem(name: "code_challenge", value: configuration.codeChallenge)
         ]
-        guard let accessTokenURL = URL(string: configuration.baseURL + configuration.authorizePath) else { return nil }
         return createUrlComponents(url: accessTokenURL, queryItems: queryItems).url
     }
     func createTokenRequest(urlString: String, method: String, header: [String: String], body: Data?) throws -> URLRequest {
@@ -74,7 +73,7 @@ extension AuthenticationHandler {
         return URLRequest
     }
     func createBody(code: String? = nil, refreshToken: String? = nil) -> Data? {
-        guard let configuration = configuration else { return nil }
+        guard let configuration = configuration, let accessTokenURL = URL(string: configuration.baseURL) else { return nil }
 
         var queryItems = [
           URLQueryItem(name: "code_verifier", value: configuration.codeVerifier),
@@ -88,7 +87,6 @@ extension AuthenticationHandler {
             queryItems.append(URLQueryItem(name: "refresh_token", value: refreshToken))
             queryItems.append(URLQueryItem(name: "grant_type", value: "refresh_token"))
         }
-        guard let accessTokenURL = URL(string: configuration.baseURL) else { return nil }
         return createUrlComponents(url: accessTokenURL, queryItems: queryItems).query?.data(using: .utf8)
     }
     func createUrlComponents(url: URL, queryItems: [URLQueryItem]?) -> URLComponents {

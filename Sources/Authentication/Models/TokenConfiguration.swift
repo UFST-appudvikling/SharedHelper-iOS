@@ -130,7 +130,16 @@ extension AuthenticationHandler {
         let user: TokenConfiguration
     }
     public struct AuthenticatedUserModel: Codable, Hashable {
-        public init(skatQAALevel: String, eIdentifier: String, typeOfIdentifier: String, alternateIdentifier: String, alternateIdentifierType: String, alternateName: String, legalname: String, typeOfActor: String, typeOfPerson: String, countryCode: String) {
+        public init(skatQAALevel: String,
+                    eIdentifier: String,
+                    typeOfIdentifier: String,
+                    alternateIdentifier: String,
+                    alternateIdentifierType: String,
+                    alternateName: String,
+                    legalname: String,
+                    typeOfActor: String,
+                    typeOfPerson: String,
+                    countryCode: String) {
             self.skatQAALevel = skatQAALevel
             self.eIdentifier = eIdentifier
             self.typeOfIdentifier = typeOfIdentifier
@@ -155,7 +164,15 @@ extension AuthenticationHandler {
         let countryCode: String
     }
     public struct DelegatorModel: Codable, Hashable {
-        public init(identifier: String, typeOfIdentifier: String, alternateIdentifier: String, alternateIdentifierType: String, alternateName: String, legalname: String, typeOfActor: String, typeOfPerson: String, countryCode: String) {
+        public init(identifier: String,
+                    typeOfIdentifier: String,
+                    alternateIdentifier: String,
+                    alternateIdentifierType: String,
+                    alternateName: String,
+                    legalname: String,
+                    typeOfActor: String,
+                    typeOfPerson: String,
+                    countryCode: String) {
             self.identifier = identifier
             self.typeOfIdentifier = typeOfIdentifier
             self.alternateIdentifier = alternateIdentifier
