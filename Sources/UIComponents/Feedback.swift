@@ -92,7 +92,13 @@ struct FeedbackViewModifier: ViewModifier {
         ZStack {
             content
             if showFeedback {
-                FeedbackView(showFeedbackOverlay: $showFeedback, submitFeedback: submitFeedback, onCloseButtonTap: onCloseButtonTap, localization: localization, styling: styling)
+                FeedbackView(
+                    showFeedbackOverlay: $showFeedback,
+                    submitFeedback: submitFeedback,
+                    onCloseButtonTap: onCloseButtonTap,
+                    localization: localization,
+                    styling: styling
+                )
             }
         }
         .animation(.default, value: showFeedback)
