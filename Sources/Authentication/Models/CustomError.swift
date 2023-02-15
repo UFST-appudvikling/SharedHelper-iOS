@@ -12,6 +12,7 @@ public extension AuthenticationHandler {
         case decodingError
         case noResponse
         case invalidURL
+        case invalidConfiguration
         case invalidData
         case dissmissLogin(error: String)
         case unexpectedStatusCode(_ code: Int)
@@ -32,6 +33,8 @@ public extension AuthenticationHandler {
                 return "Unexpected Error with code: \(msg)"
             case .dissmissLogin(let error):
                 return "Dissmiss Login \(error)"
+            case .invalidConfiguration:
+                return "Invalid Configuration"
             }
         }
     }

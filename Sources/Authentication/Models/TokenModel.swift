@@ -11,7 +11,7 @@ public extension AuthenticationHandler {
     struct TokenModel: Codable {
         public var accessToken: String
         var expiresIn: Int
-        var refreshExpiresIn: Int
+        var refreshExpiresIn: Int?
         var refreshToken: String
         public var tokenType: String
         var idToken: String?
@@ -21,7 +21,7 @@ public extension AuthenticationHandler {
             return Date().addingTimeInterval(TimeInterval(expiresIn))
         }
         var refreshExpiresAt: Date {
-            return Date().addingTimeInterval(TimeInterval(refreshExpiresIn))
+            return Date().addingTimeInterval(TimeInterval(refreshExpiresIn ?? 0))
         }
         var wrap: String {
             let seperator = TokenModel.keychainValueSeparator
@@ -91,5 +91,6 @@ extension AuthenticationHandler {
         case loginSheet
         case keychain
         case refresh
+        case automatedLogin
     }
 }

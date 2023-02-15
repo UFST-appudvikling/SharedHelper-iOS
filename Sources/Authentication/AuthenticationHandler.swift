@@ -8,7 +8,6 @@
 import Foundation
 import AuthenticationServices
 import UIKit
-
 /// Main functionality of this is like the following list:
 /// 
 /// - Fetch token from Keychain
@@ -21,11 +20,16 @@ import UIKit
 ///         - Login flow
 ///             - Get authorization code
 ///             - Fetch token using the authorization code
-public final class AuthenticationHandler: NSObject {
+public final class AuthenticationHandler: NSObject, ObservableObject {
     // MARK: Properties
-    internal let configuration: Configuration
-    internal let contextProvider: ASPresentationAnchor
     internal var sheetIsActive: Bool = false
+    internal var configuration: Configuration?
+    internal let contextProvider: ASPresentationAnchor?
+    internal var loginType: LoginType
+    internal enum LoginType: Equatable {
+        case automatic(AutomatedLoginModel)
+        case manual
+    }
     // MARK: Methods
     /// You should use this method to be able to start using ``AuthenticationHandler``
     ///
@@ -57,12 +61,36 @@ public final class AuthenticationHandler: NSObject {
     ///     contextProvider: contextProvider ?? ASPresentationAnchor()
     /// )
     /// ````
-    /// - Parameter configuration: The only way you can using this lib, look at example
+    /// - Parameter configuration: One way you can using this lib, look at example
     /// - Parameter contextProvider: Provide a window to show the login, look at example
     public init(configuration: Configuration, contextProvider: ASPresentationAnchor) {
         self.configuration = configuration
         self.contextProvider = contextProvider
+        self.loginType = .manual
     }
+    /// - Example:
+    /// ````
+    /// import Authentication
+    ///
+    /// let tokenConfiguration = AuthenticationHandler.TokenConfiguration(apiKey: "xxxxxx",
+    ///                                                                   clientID: "xxxxxx",
+    ///                                                                   azureOrDcs: "azure",
+    ///                                                                   nonce: "xxxxxx",
+    ///                                                                   azure: AuthenticationHandler.AzureModel(name: "w20", email:  "xxxxxx"),
+    ///                                                                   authorizations: AuthenticationHandler.AuthorizationsModel(roles:  ["xxxxxx"]))
+    /// let loginModel = AuthenticationHandler.AutomatedLoginModel(url: "https://xxxxxx/auth/realms/test/automatedtest/test",
+    ///                                                            user: tokenConfiguration)
+    ///
+    /// authenticationHandler = AuthenticationHandler(automatedLoginModel: loginModel )
+    /// ````
+    /// - Parameter automatedLoginModel: One way you can using this lib, look at example
+
+    public init(automatedLoginModel: AutomatedLoginModel) {
+        self.configuration = nil
+        self.contextProvider = nil
+        self.loginType = .automatic(automatedLoginModel)
+    }
+    
     /// Gives User Info coming from OAuth server by Fetching token and Request to fetch user info
     ///
     /// - Fetch token by using ``fetchToken()``
@@ -94,12 +122,18 @@ public final class AuthenticationHandler: NSObject {
     /// - Returns: (``AuthenticationHandler/TokenModel``, ``AuthenticationHandler/TokenSource``)
     /// - Throws: ``AuthenticationHandler/CustomError``
     public func fetchToken() async throws -> (TokenModel, TokenSource) {
-        if let token = KeychainHelper.retrieveToken() {
+        if let token = KeychainHelper.retrieveToken(), loginType == .manual {
             return try await validateTokenOrRefresh(token: token)
         } else {
-            return (try await loginByShowingSheet(), .loginSheet)
+            switch loginType {
+            case .automatic(let automatedLoginModel):
+                return (try await getTokenByConfiguration(automatedLoginModel: automatedLoginModel), .automatedLogin)
+            case .manual:
+                return (try await loginByShowingSheet(), .loginSheet)
+            }
         }
     }
+
     /// Force user to Login by using AuthenticationServices
     /// - Login flow
     ///     - Get authorization code
@@ -129,27 +163,6 @@ public final class AuthenticationHandler: NSObject {
     public func logout() {
         KeychainHelper.invalidateToken()
     }
-    /// Shows How to initial configuration
-    /// - Warning:This should not be used any project as a public init
-    private override init() {
-        self.configuration = AuthenticationHandler.Configuration(
-            baseURL: "https://example.com",
-            clientID: "+++++++",
-            authorizePath: "/auth/realms/++++++/protocol/openid-connect/auth",
-            accessTokenPath: "/auth/realms/++++++/protocol/openid-connect/token",
-            userInfoPath: "/auth/realms/++++++/protocol/openid-connect/userinfo",
-            callBackURL: "dk.++++.+++++.debug:/",
-            callbackURLScheme: "dk.++++.+++++.debug",
-            scopes: ["openid", "++++++"]
-        )
-        var contextProvider: ASPresentationAnchor?
-        DispatchQueue.main.async {
-            let scenes = UIApplication.shared.connectedScenes
-            let windowScene = scenes.first as? UIWindowScene
-            contextProvider = windowScene?.windows.first
-        }
-        self.contextProvider = contextProvider ?? ASPresentationAnchor()
-    }
 }
 // MARK: - Private Methodes
 extension AuthenticationHandler {
@@ -158,7 +171,12 @@ extension AuthenticationHandler {
         if token.accessTokenIsValid {
             return (token, .keychain)
         } else {
-            return try await refreshTokenOrLogin(token: token)
+            switch loginType {
+            case .automatic(let automatedLoginModel):
+                return (try await getTokenByConfiguration(automatedLoginModel: automatedLoginModel), .automatedLogin)
+            case .manual:
+                return try await refreshTokenOrLogin(token: token)
+            }
         }
     }
     private func refreshTokenOrLogin(token: TokenModel) async throws -> (TokenModel, TokenSource) {
@@ -168,14 +186,14 @@ extension AuthenticationHandler {
             return (try await loginByShowingSheet(), .loginSheet)
         }
     }
-
     // MARK: Networking Methods
     private func getAuthorizationCode () async -> Result<String, Error> {
         return await withCheckedContinuation { [weak self] continuation in
             
             guard let url = createAuthorizationURL() else { return continuation.resume(returning: .failure(CustomError.invalidURL)) }
+            guard let configuration = configuration else { return continuation.resume(returning: .failure(CustomError.invalidConfiguration)) }
             if !sheetIsActive {
-                let authenticationSession = ASWebAuthenticationSession(url: url, callbackURLScheme: self?.configuration.callbackURLScheme) { [weak self] callbackURL, error in
+                let authenticationSession = ASWebAuthenticationSession(url: url, callbackURLScheme: configuration.callbackURLScheme) { [weak self] callbackURL, error in
                     self?.sheetIsActive = false
                     if let error = error {
                         continuation.resume(returning: .failure(CustomError.dissmissLogin(error: error.localizedDescription)))
@@ -200,6 +218,8 @@ extension AuthenticationHandler {
     }
     private func getToken(authorizationCode: String? = nil, refreshToken: String? = nil) async throws -> TokenModel {
         do {
+            guard let configuration = configuration else { throw CustomError.invalidConfiguration }
+
             var body: Data?
             if let refreshToken = refreshToken {
                 body = createBody(refreshToken: refreshToken)
@@ -213,14 +233,17 @@ extension AuthenticationHandler {
                 header: ["Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"],
                 body: body
             )
-            KeychainHelper.invalidateToken()
             if let response = try await sendRequest(request: request, responseType: TokenModel.self) {
+                KeychainHelper.invalidateToken()
                 KeychainHelper.storeToken(response)
                 return response
             } else {
+                KeychainHelper.invalidateToken()
                 throw CustomError.invalidData
             }
         } catch let error {
+            KeychainHelper.invalidateToken()
+
             if case let CustomError.unexpectedStatusCode(code) = error, (400..<500).contains(code) {
                 return try await loginByShowingSheet()
             } else {
@@ -228,8 +251,33 @@ extension AuthenticationHandler {
             }
         }
     }
+    private func getTokenByConfiguration(automatedLoginModel: AutomatedLoginModel) async throws -> TokenModel {
+        do {
+            let request = try createTokenRequest(
+                urlString: automatedLoginModel.url,
+                method: "POST",
+                header: ["Content-Type": "application/json"],
+                body: automatedLoginModel.user.asJsonData
+            )
+            if let response = try await sendRequest(request: request, responseType: TokenModel.self) {
+                KeychainHelper.invalidateToken()
+
+                KeychainHelper.storeToken(response)
+                return response
+            } else {
+                KeychainHelper.invalidateToken()
+
+                throw CustomError.invalidData
+            }
+        } catch let error {
+            KeychainHelper.invalidateToken()
+
+            throw error
+        }
+    }
     private func getUserInfo(token: TokenModel) async throws -> UserModel {
         do {
+            guard let configuration = configuration else { throw CustomError.invalidConfiguration }
 
             let request = try createUserRequest(
                 urlString: configuration.baseURL + configuration.userInfoPath,
@@ -250,6 +298,6 @@ extension AuthenticationHandler {
 // MARK: - Protocol Handlers
 extension AuthenticationHandler: ASWebAuthenticationPresentationContextProviding {
     public func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        return self.contextProvider
+        return self.contextProvider ?? ASPresentationAnchor()
   }
 }
