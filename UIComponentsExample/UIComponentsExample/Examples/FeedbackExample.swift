@@ -23,7 +23,7 @@ struct FeedbackExample: View {
     
     var body: some View {
         List {
-            Section("This UI Compnenten is developed with reusability and customizability in mind.\nFor example you can change color of the primary button if you want to.") {
+            Section("This component is developed with reusability and customizability in mind.\nFor example you can change the color of the primary button if you want to.") {
                 ColorPicker("Change color 😎", selection: $primaryButtonColor)
             }
             Button("Start feedback") {
@@ -34,9 +34,9 @@ struct FeedbackExample: View {
         .feedback(
             showFeedback: $showFeedback,
             localization: localization,
-            styling: .init(primaryButtonColor: primaryButtonColor)
-        ) { providedFeedback in
-            
-        }
+            styling: .init(primaryButtonColor: primaryButtonColor),
+            onCloseButtonTap: { },
+            submitFeedback: { providedFeedback in }
+        )
     }
 }

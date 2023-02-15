@@ -48,22 +48,32 @@ public struct FeedbackLocalization {
 }
 
 public extension View {
-    /// Rating alert
-    /// - Parameter title: title displayed on rating pop up
-    /// - Parameter message: Message displayed on rating pop up
-    /// - Parameter showRatingOverlay: Decides when overlay should be shown
+    
+    /**
+     Feedback popup
+     
+     - Parameter showFeedback: Decides when overlay should be shown
+     - Parameter localization: Localization strings
+     - Parameter styling: Customized UI styling
+     - Parameter onCloseButtonTapCallback: Triggered when user taps on close button.
+         Note that this callback should only be used for analytics tracking since the navigation mechanismback to the app is handled in the modifier itself
+     - Parameter submitFeedbackCallback: Triggered when the user submits feedback
+     */
+    
     func feedback(
         showFeedback: Binding<Bool>,
         localization: FeedbackLocalization,
         styling: FeedbackStyling = .init(),
-        submitFeedbackCallback: @escaping (_ providedFeedback: String) -> Void
+        onCloseButtonTap: @escaping () -> Void,
+        submitFeedback: @escaping (_ providedFeedback: String) -> Void
     ) -> some View {
         modifier(
             FeedbackViewModifier(
                 showFeedback: showFeedback,
                 styling: styling,
                 localization: localization,
-                submitFeedbackCallback: submitFeedbackCallback
+                onCloseButtonTap: onCloseButtonTap,
+                submitFeedback: submitFeedback
             )
         )
     }
@@ -75,13 +85,14 @@ struct FeedbackViewModifier: ViewModifier {
     @Binding var showFeedback: Bool
     let styling: FeedbackStyling
     let localization: FeedbackLocalization
-    let submitFeedbackCallback: (_ input: String) -> Void
+    let onCloseButtonTap: () -> Void
+    let submitFeedback: (_ input: String) -> Void
     
     func body(content: Content) -> some View {
         ZStack {
             content
             if showFeedback {
-                FeedbackView(showFeedbackOverlay: $showFeedback, submitFeedbackCallback: submitFeedbackCallback, localization: localization, styling: styling)
+                FeedbackView(showFeedbackOverlay: $showFeedback, submitFeedback: submitFeedback, onCloseButtonTap: onCloseButtonTap, localization: localization, styling: styling)
             }
         }
         .animation(.default, value: showFeedback)
@@ -92,10 +103,14 @@ struct FeedbackViewModifier: ViewModifier {
 struct FeedbackView: View {
     
     @Binding var showFeedbackOverlay: Bool
-    let submitFeedbackCallback: (_ providedFeedback: String) -> Void
+    let submitFeedback: (_ providedFeedback: String) -> Void
+    let onCloseButtonTap: () -> Void
     @State var inputTextField: String = ""
     @FocusState var textfieldIsFocused: Bool
     @State var showSuccess: Bool = false
+    var disableSubmitButton: Bool {
+        inputTextField.trimmingCharacters(in: .whitespaces).isEmpty
+    }
     
     let localization: FeedbackLocalization
     let styling: FeedbackStyling
@@ -127,26 +142,7 @@ private extension FeedbackView {
                     .padding(24)
                     .background(Color.white)
                     .cornerRadius(4)
-                    .overlay {
-                        VStack {
-                            HStack {
-                                Spacer()
-                                Button {
-                                    self.textfieldIsFocused = false
-                                    withAnimation {
-                                        self.showFeedbackOverlay = false
-                                    }
-                                } label: {
-                                    Image(systemName: "xmark")
-                                        .resizable()
-                                        .frame(width: 14, height: 14)
-                                        .padding(.all, 20)
-                                        .foregroundColor(styling.secondaryColor)
-                                }
-                            }
-                            Spacer()
-                        }
-                    }
+                    .overlay { closeButton }
                     .padding(16)
             }
         }
@@ -160,20 +156,34 @@ private extension FeedbackView {
         
     }
     
+    var closeButton: some View {
+        VStack {
+            HStack {
+                Spacer()
+                Button {
+                    self.textfieldIsFocused = false
+                    withAnimation {
+                        self.showFeedbackOverlay = false
+                    }
+                    self.onCloseButtonTap()
+                } label: {
+                    Image(systemName: "xmark")
+                        .resizable()
+                        .frame(width: 14, height: 14)
+                        .padding(.all, 20)
+                        .foregroundColor(styling.secondaryColor)
+                }
+            }
+            Spacer()
+        }
+    }
+    
     @ViewBuilder
     var backgroundView: some View {
-        if #available(iOS 16.0, *) {
-            Rectangle()
-                .ignoresSafeArea()
-                .toolbar(.hidden, for: .tabBar)
-                .foregroundColor(.black)
-                .opacity(0.2)
-        } else {
             Rectangle()
                 .ignoresSafeArea()
                 .foregroundColor(.black)
                 .opacity(0.2)
-        }
     }
     
     var alertView: some View {
@@ -202,19 +212,19 @@ private extension FeedbackView {
                 Button {
                     self.textfieldIsFocused = false
                     self.showSuccess = true
-                    self.submitFeedbackCallback(inputTextField)
+                    self.submitFeedback(inputTextField)
                 } label: {
                     Text(localization.primaryButtonText)
                         .frame(maxWidth: .infinity)
                 }
-                .disabled(inputTextField.trimmingCharacters(in: .whitespaces).isEmpty)
+                .disabled(disableSubmitButton)
                 .font(Font.academySans(size: 17, type: .skat_bold))
                 .padding(.vertical, 14)
                 .frame(maxWidth: .infinity)
                 .background(styling.primaryButtonColor)
                 .foregroundColor(.white)
                 .cornerRadius(4)
-                .opacity(inputTextField.trimmingCharacters(in: .whitespaces).isEmpty ? 0.6 : 1.0)
+                .opacity(disableSubmitButton ? 0.6 : 1.0)
                 .multilineTextAlignment(.center)
             }
         }

@@ -25,11 +25,16 @@ public struct SuccessOverlayStyling {
 }
 
 public extension View {
-    /// Success overlay animation shown before navigation
-    /// - Parameter message: Message displayed on success overlay
-    /// - Parameter showSuccessOverlay: Decides when overlay should be shown
-    /// - Parameter delayUntilNavigationCallback: Delay time before navigationCallback is triggered, default value is 2.5 seconds
-    /// - Parameter navigationCallback: Trigger when parent view should navigate to next step in flow
+    
+    /**
+     Success overlay animation
+     
+     - Parameter message: Message displayed on success overlay
+     - Parameter showSuccessOverlay: Decides when overlay should be shown
+     - Parameter delayUntilNavigationCallback: Delay time before navigationCallback is triggered, default value is 2.5 seconds
+     - Parameter navigationCallback: Trigger when parent view should navigate to next step in flow
+     */
+    
     func successOverlay(
         message: String,
         showSuccessOverlay: Binding<Bool>,
@@ -122,7 +127,7 @@ private extension SuccessOverlayView {
                 }
             if showAlert {
                 alertView
-                // Fix so voiceover stays on the "message" while success overlay is shown
+                    // Fix so voiceover stays on the "message" while success overlay is shown
                     .if(self.isModal) {
                         $0.accessibility(addTraits: .isModal)
                     }

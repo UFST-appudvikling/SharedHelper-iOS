@@ -39,8 +39,6 @@ extension Foundation.Bundle {
             
             let bundlePath = candidate?.appendingPathComponent(bundleName + ".bundle")
             
-//            print("app: \(bundlePath)")
-            
             if let bundle = bundlePath.flatMap(Bundle.init(url:)) {
                 return bundle
             }
@@ -84,16 +82,17 @@ public func registerFonts() {
     }
 }
 
-public extension UIFont {
-    static func academySans(size: CGFloat, type: AcademyName) -> UIFont {
-        registerFonts()
-        return UIFont(name: type.rawValue, size: UIFontMetrics.default.scaledValue(for: size))!
-    }
-}
-
 public extension Font {
     static func academySans(size: CGFloat, type: AcademyName) -> Font {
         registerFonts()
         return Font.custom(type.rawValue, size: size)
+    }
+}
+
+extension View {
+    
+    @ViewBuilder
+    func font(_ academyName: AcademyName, size: CGFloat) -> some View {
+        self.font(.custom(academyName.rawValue, size: size))
     }
 }
