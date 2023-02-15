@@ -233,7 +233,7 @@ extension AuthenticationHandler {
                 header: ["Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"],
                 body: body
             )
-            if let response = try await sendRequest(request: request, responseType: TokenModel.self) {
+            if let response: TokenModel = try await sendRequest(request: request) {
                 KeychainHelper.invalidateToken()
                 KeychainHelper.storeToken(response)
                 return response
@@ -259,7 +259,7 @@ extension AuthenticationHandler {
                 header: ["Content-Type": "application/json"],
                 body: automatedLoginModel.user.asJsonData
             )
-            if let response = try await sendRequest(request: request, responseType: TokenModel.self) {
+            if let response: TokenModel = try await sendRequest(request: request) {
                 KeychainHelper.invalidateToken()
 
                 KeychainHelper.storeToken(response)
@@ -285,7 +285,7 @@ extension AuthenticationHandler {
                 header: ["Authorization": "Bearer \(token.accessToken)"]
             )
 
-            if let response = try await sendRequest(request: request, responseType: UserModel.self) {
+            if let response: UserModel = try await sendRequest(request: request) {
                 return response
             } else {
                 throw CustomError.invalidData
