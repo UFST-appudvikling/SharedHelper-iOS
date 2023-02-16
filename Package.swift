@@ -21,6 +21,8 @@ let package = Package(
             targets: ["Tracking"]),
         .library(name: "VersionCheck",
                  targets: ["VersionCheck"]),
+        .library(name: "UIComponents",
+                 targets: ["UIComponents"])
     ],
     dependencies: [
         .package(
@@ -54,6 +56,14 @@ let package = Package(
             dependencies: [
                 .product(name: "FirebaseRemoteConfig", package: "firebase-ios-sdk"),
             ]),
+        .target(
+            name: "UIComponents",
+            dependencies: [],
+            resources: [
+                .process("Resources/Font/AcademySans"),
+                .process("Resources/Assets/Icons")
+            ]
+        ),
         .testTarget(
             name: "VersionCheckTests",
             dependencies: ["VersionCheck"])
