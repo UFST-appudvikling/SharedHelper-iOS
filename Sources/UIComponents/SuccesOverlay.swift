@@ -14,7 +14,7 @@ public struct SuccessOverlayStyling {
     let checkmarkColor: Color
     
     public init(
-        messageFont: Font = Font.academySans(size: 18, type: .skat_demiBold),
+        messageFont: Font = Font.academySans(size: 18, type: .skatDemiBold),
         messageColor: Color = Color(#colorLiteral(red: 0.1018853113, green: 0.1138664857, blue: 0.3018276095, alpha: 1)),
         checkmarkColor: Color = Color(#colorLiteral(red: 0, green: 0.5058823529, blue: 0.2235294118, alpha: 1))
     ) {

@@ -194,14 +194,14 @@ private extension FeedbackView {
     var feedbackView: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(localization.header)
-                .font(Font.academySans(size: 28, type: .skat_bold))
+                .font(Font.academySans(size: 28, type: .skatBold))
                 .foregroundColor(styling.secondaryColor)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity)
                 .multilineTextAlignment(.center)
                 .padding(.top, 30)
             Text(localization.boxTitle)
-                .font(Font.academySans(size: 17, type: .skat_regular))
+                .font(Font.academySans(size: 17, type: .skatRegular))
                 .foregroundColor(styling.secondaryColor)
             TextEditor(text: $inputTextField)
                 .padding(.all, 10)
@@ -213,11 +213,11 @@ private extension FeedbackView {
                 .onAppear {
                     self.textfieldIsFocused = true
                 }
-                .font(Font.academySans(size: 17, type: .skat_regular))
+                .font(Font.academySans(size: 17, type: .skatRegular))
                 .foregroundColor(styling.bodyTextColor)
                 .background(styling.backgroundColor)
             Text(localization.privacyPolicyDisclamer)
-                .font(Font.academySans(size: 11, type: .skat_regular))
+                .font(Font.academySans(size: 11, type: .skatRegular))
                 .foregroundColor(styling.secondaryColor)
             HStack {
                 Button {
@@ -229,7 +229,7 @@ private extension FeedbackView {
                         .frame(maxWidth: .infinity)
                 }
                 .disabled(disableSubmitButton)
-                .font(Font.academySans(size: 17, type: .skat_bold))
+                .font(Font.academySans(size: 17, type: .skatBold))
                 .padding(.vertical, 14)
                 .frame(maxWidth: .infinity)
                 .background(styling.primaryButtonColor)

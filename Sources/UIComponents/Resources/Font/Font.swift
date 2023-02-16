@@ -14,11 +14,11 @@ public class StyleBundle {}
 class CurrentBundleFinder {}
 
 public enum AcademyName: String, CaseIterable {
-    case skat_black = "AcademySans-Black"
-    case skat_regular = "AcademySans-Regular"
-    case skat_bold = "AcademySans-Bold"
-    case skat_demiBold = "AcademySans-Demibold"
-    case skat_medium = "AcademySans-Medium"
+    case skatBlack = "AcademySans-Black"
+    case skatRegular = "AcademySans-Regular"
+    case skatBold = "AcademySans-Bold"
+    case skatDemiBold = "AcademySans-Demibold"
+    case skatMedium = "AcademySans-Medium"
 }
 
 extension Foundation.Bundle {
