@@ -16,11 +16,11 @@ public struct FeedbackStyling {
     let backgroundColor: Color
     
     public init(
-        primaryButtonColor: Color = Color(#colorLiteral(red: 0, green: 0.5659442544, blue: 0.287532568, alpha: 1)),
-        secondaryColor: Color = Color(#colorLiteral(red: 0.1018853113, green: 0.1138664857, blue: 0.3018276095, alpha: 1)),
-        bodyTextColor: Color = Color(#colorLiteral(red: 0.262745098, green: 0.262745098, blue: 0.3882352941, alpha: 1)),
-        borderColor: Color = Color(#colorLiteral(red: 0.262745098, green: 0.262745098, blue: 0.3882352941, alpha: 1)),
-        backgroundColor: Color = Color(#colorLiteral(red: 1, green: 0.9999999404, blue: 0.9999999404, alpha: 1))
+        primaryButtonColor: Color = Color.CustomColor.green,
+        secondaryColor: Color = Color.CustomColor.darkBlue,
+        bodyTextColor: Color = Color.CustomColor.grayishBlue,
+        borderColor: Color = Color.CustomColor.grayishBlue,
+        backgroundColor: Color = Color.CustomColor.white
     ) {
         self.primaryButtonColor = primaryButtonColor
         self.secondaryColor = secondaryColor

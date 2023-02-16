@@ -15,8 +15,8 @@ public struct SuccessOverlayStyling {
     
     public init(
         messageFont: Font = Font.academySans(size: 18, type: .skatDemiBold),
-        messageColor: Color = Color(#colorLiteral(red: 0.1018853113, green: 0.1138664857, blue: 0.3018276095, alpha: 1)),
-        checkmarkColor: Color = Color(#colorLiteral(red: 0, green: 0.5058823529, blue: 0.2235294118, alpha: 1))
+        messageColor: Color = Color.CustomColor.darkBlue,
+        checkmarkColor: Color = Color.CustomColor.green
     ) {
         self.messageFont = messageFont
         self.messageColor = messageColor
@@ -155,7 +155,7 @@ private extension SuccessOverlayView {
     
     var alertView: some View {
         VStack(alignment: .center, spacing: 20) {
-            Image("Success", bundle: .myModule)
+            Image.success
                 .resizable()
                 .frame(width: 40, height: 40)
                 .foregroundColor(styling.checkmarkColor)
