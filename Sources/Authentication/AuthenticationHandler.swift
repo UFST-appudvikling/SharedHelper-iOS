@@ -303,8 +303,24 @@ extension AuthenticationHandler: ASWebAuthenticationPresentationContextProviding
 }
 
 
+/**
+ An extension for the `AuthenticationHandler` that provides a method to decode a JWT payload.
+
+ This extension provides a method `getPayload` that takes a decodable payload type and an access token as input.
+ The method returns an instance of the payload type, or `nil` if decoding fails.
+*/
 extension AuthenticationHandler {
+    /**
+     Decodes a JWT payload into a specified decodable type.
+     
+     - Parameters:
+        - type: The `Decodable` type to decode the payload into.
+        - accessToken: A JWT access token as a `String`.
+     
+     - Returns: An instance of the provided payload type, or `nil` if decoding fails.
+     */
     public func getPayload<Payload: Decodable>(_ type: Payload.Type, accessToken: String)-> Payload? {
+        // Helper function to decode base64URL encoded strings
         let encodedData = { (string: String) -> Data? in
             var encodedString = string.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
             
