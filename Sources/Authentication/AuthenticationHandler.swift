@@ -301,3 +301,50 @@ extension AuthenticationHandler: ASWebAuthenticationPresentationContextProviding
         return self.contextProvider ?? ASPresentationAnchor()
   }
 }
+
+
+/**
+ An extension for the `AuthenticationHandler` that provides a method to decode a JWT payload.
+
+ This extension provides a method `getPayload` that takes a decodable payload type and an access token as input.
+ The method returns an instance of the payload type, or `nil` if decoding fails.
+*/
+extension AuthenticationHandler {
+    /**
+     Decodes a JWT payload into a specified decodable type.
+     
+     - Parameters:
+        - type: The `Decodable` type to decode the payload into.
+        - accessToken: A JWT access token as a `String`.
+     
+     - Returns: An instance of the provided payload type, or `nil` if decoding fails.
+     */
+    public func getPayload<Payload: Decodable>(_ type: Payload.Type, accessToken: String)-> Payload? {
+        // Helper function to decode base64URL encoded strings
+        let encodedData = { (string: String) -> Data? in
+            var encodedString = string.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+            
+            switch (encodedString.utf16.count % 4) {
+            case 2:     encodedString = "\(encodedString)=="
+            case 3:     encodedString = "\(encodedString)="
+            default:    break
+            }
+            
+            return Data(base64Encoded: encodedString)
+        }
+        
+        let components = accessToken.components(separatedBy: ".")
+        
+        guard components.count == 3, let payloadData = encodedData(components[1] as String) else { return nil }
+        
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
+        do {
+            return try decoder.decode(Payload.self, from: payloadData)
+            
+        } catch {
+            return nil
+        }
+    }
+}
