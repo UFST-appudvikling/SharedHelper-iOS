@@ -304,7 +304,7 @@ extension AuthenticationHandler: ASWebAuthenticationPresentationContextProviding
 
 
 extension AuthenticationHandler {
-    public static func getPayload(accessToken: String) <Payload: Decodable> -> Payload? {
+    public static func getPayload<Payload: Decodable>(accessToken: String)-> Payload? {
         let encodedData = { (string: String) -> Data? in
             var encodedString = string.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
             
