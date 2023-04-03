@@ -301,3 +301,34 @@ extension AuthenticationHandler: ASWebAuthenticationPresentationContextProviding
         return self.contextProvider ?? ASPresentationAnchor()
   }
 }
+
+
+extension AuthenticationHandler {
+    public static func getPayload(accessToken: String) <Payload: Decodable> -> Payload? {
+        let encodedData = { (string: String) -> Data? in
+            var encodedString = string.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+            
+            switch (encodedString.utf16.count % 4) {
+            case 2:     encodedString = "\(encodedString)=="
+            case 3:     encodedString = "\(encodedString)="
+            default:    break
+            }
+            
+            return Data(base64Encoded: encodedString)
+        }
+        
+        let components = accessToken.components(separatedBy: ".")
+        
+        guard components.count == 3, let payloadData = encodedData(components[1] as String) else { return nil }
+        
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
+        do {
+            return try decoder.decode(Payload.self, from: payloadData)
+            
+        } catch {
+            return nil
+        }
+    }
+}
