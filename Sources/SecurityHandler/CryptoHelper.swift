@@ -36,10 +36,18 @@ extension SecurityHelper.CryptoHelper {
     }
     private static func storeSymmetricKey(_ key: SymmetricKey, symmetricKeyIdentifier: String) throws {
         let keyData = key.withUnsafeBytes { Data($0) }
+        let accessControl = SecAccessControlCreateWithFlags(
+            kCFAllocatorDefault,
+            kSecAttrAccessibleWhenUnlocked,
+            [],
+            nil
+        )
+        
         let query: [String: Any] = [
             kSecClass as String: kSecClassKey,
             kSecAttrApplicationTag as String: symmetricKeyIdentifier,
-            kSecValueData as String: keyData
+            kSecValueData as String: keyData,
+            kSecAttrAccessControl as String: accessControl!
         ]
         let status = SecItemAdd(query as CFDictionary, nil)
         guard status == errSecSuccess else {
