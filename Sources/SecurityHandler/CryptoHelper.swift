@@ -9,7 +9,7 @@ import Foundation
 import CryptoKit
 import Security
 
-class CryptoHelper {
+public class CryptoHelper {
     public static func encryptData(_ data: Data, symmetricKeyIdentifier: String) throws -> Data {
         let sealedBox = try AES.GCM.seal(data, using: CryptoHelper.getSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier))
         let combined = sealedBox.combined!
