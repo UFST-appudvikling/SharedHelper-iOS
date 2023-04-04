@@ -9,27 +9,29 @@ import Foundation
 import CryptoKit
 import Security
 
-public class CryptoHelper {
-    public static func encryptData(_ data: Data, symmetricKeyIdentifier: String) throws -> Data {
-        let sealedBox = try AES.GCM.seal(data, using: CryptoHelper.getSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier))
-        let combined = sealedBox.combined!
-        return combined
-    }
+public extension SecurityHelper {
+     class CryptoHelper {
+        public static func encryptData(_ data: Data, symmetricKeyIdentifier: String) throws -> Data {
+            let sealedBox = try AES.GCM.seal(data, using: CryptoHelper.getSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier))
+            let combined = sealedBox.combined!
+            return combined
+        }
 
-    public static func decryptData(_ encryptedData: Data, symmetricKeyIdentifier: String) throws -> Data {
-        let sealedBox = try AES.GCM.SealedBox(combined: encryptedData)
-        let decryptedData = try AES.GCM.open(sealedBox, using: CryptoHelper.getSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier))
-        return decryptedData
+        public static func decryptData(_ encryptedData: Data, symmetricKeyIdentifier: String) throws -> Data {
+            let sealedBox = try AES.GCM.SealedBox(combined: encryptedData)
+            let decryptedData = try AES.GCM.open(sealedBox, using: CryptoHelper.getSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier))
+            return decryptedData
+        }
+        
     }
-    
 }
 
-extension CryptoHelper {
+extension SecurityHelper.CryptoHelper {
     private static func getSymmetricKey(symmetricKeyIdentifier: String) throws -> SymmetricKey {
-        if let key = try CryptoHelper.loadSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier) {
+        if let key = try SecurityHelper.CryptoHelper.loadSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier) {
             return key
         } else {
-            return try CryptoHelper.generateAndStoreSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier)
+            return try SecurityHelper.CryptoHelper.generateAndStoreSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier)
         }
     }
     private static func storeSymmetricKey(_ key: SymmetricKey, symmetricKeyIdentifier: String) throws {
