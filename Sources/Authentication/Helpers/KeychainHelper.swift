@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SecurityHandler
 
 extension AuthenticationHandler {
     private enum KeychainIdentifiers {

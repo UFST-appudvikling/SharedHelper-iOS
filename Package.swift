@@ -17,6 +17,9 @@ let package = Package(
             name: "Authentication",
             targets: ["Authentication"]),
         .library(
+            name: "SecurityHandler",
+            targets: ["SecurityHandler"]),
+        .library(
             name: "Tracking",
             targets: ["Tracking"]),
         .library(name: "VersionCheck",
@@ -45,6 +48,9 @@ let package = Package(
             dependencies: ["Networking"]),
         .target(
             name: "Authentication",
+            dependencies: ["SecurityHandler"]),
+        .target(
+            name: "SecurityHandler",
             dependencies: []),
         .target(
             name: "Tracking",
