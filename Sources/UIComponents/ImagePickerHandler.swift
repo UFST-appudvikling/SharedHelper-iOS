@@ -17,10 +17,13 @@ import SwiftUI
 // the UIImagePickerController.
 
 public struct ImagePickerHandler: UIViewControllerRepresentable {
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
     @Binding public var image: UIImage?
     public var sourceType: UIImagePickerController.SourceType? = nil
-    
+    public init(image: Binding<UIImage?>, sourceType: UIImagePickerController.SourceType?) {
+        self._image = image
+        self.sourceType = sourceType
+    }
     public func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
@@ -57,13 +60,13 @@ public struct ImagePickerHandler: UIViewControllerRepresentable {
         public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             DispatchQueue.main.async { [weak self] in
                 self?.parent.image = info[.originalImage] as? UIImage
-                self?.parent.presentationMode.wrappedValue.dismiss()
+                self?.parent.dismiss()
 
             }
         }
         public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             
-            self.parent.presentationMode.wrappedValue.dismiss()
+            self.parent.dismiss()
         }
         // PHPickerViewControllerDelegate methods
         public func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
@@ -75,12 +78,11 @@ public struct ImagePickerHandler: UIViewControllerRepresentable {
                 itemProvider.loadObject(ofClass: UIImage.self) {  [weak self] (image, error) in
                     DispatchQueue.main.async { [weak self] in
                         self?.parent.image = image as? UIImage
-                        self?.parent.presentationMode.wrappedValue.dismiss()
-                        
+                        self?.parent.dismiss()
                     }
                 }
             } else {
-                self.parent.presentationMode.wrappedValue.dismiss()
+                self.parent.dismiss()
                 return
             }
             
