@@ -8,20 +8,32 @@
 import Foundation
 import CoreData
 import UIKit
-
+open class PersistentContainer: NSPersistentContainer {
+}
+   
 public struct CoreDataHandler {
 
     public let container: NSPersistentContainer
 
     public init(name: String) {
-        container = NSPersistentContainer(name: name)
+        
+        guard let modelURL = Bundle.module.url(forResource:name, withExtension: "momd") else { fatalError() }
+        guard let model = NSManagedObjectModel(contentsOf: modelURL) else { fatalError() }
+        container = PersistentContainer(name:name,managedObjectModel:model)
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         })
+        
+//        container = NSPersistentContainer(name: name)
+//        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+//            if let error = error as NSError? {
+//                fatalError("Unresolved error \(error), \(error.userInfo)")
+//            }
+//        })
     }
-    
+ 
     public static func deleteExpiredData(viewContext: NSManagedObjectContext) {
         let fetchRequest: NSFetchRequest<StoredDataModel> = StoredDataModel.fetchRequest()
         
