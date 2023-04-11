@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Emad Ghorbaninia on 04/04/2023.
-//
-
 import Foundation
 import CryptoKit
 import Security
@@ -77,7 +70,7 @@ extension SecurityHelper.CryptoHelper {
 
     private static func generateAndStoreSymmetricKey(symmetricKeyIdentifier: String) throws -> SymmetricKey {
         let key = SymmetricKey(size: .bits256)
-        try storeSymmetricKey(key, symmetricKeyIdentifier: "dk.ufst.CameraGalleryApp.symmetricKey")
+        try storeSymmetricKey(key, symmetricKeyIdentifier: symmetricKeyIdentifier)
         return key
     }
 }
