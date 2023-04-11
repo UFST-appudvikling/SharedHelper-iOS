@@ -77,7 +77,7 @@ extension SecurityHelper.CryptoHelper {
 
     private static func generateAndStoreSymmetricKey(symmetricKeyIdentifier: String) throws -> SymmetricKey {
         let key = SymmetricKey(size: .bits256)
-        try storeSymmetricKey(key, symmetricKeyIdentifier: "com.yourapp.identifier.symmetricKey")
+        try storeSymmetricKey(key, symmetricKeyIdentifier: "dk.ufst.CameraGalleryApp.symmetricKey")
         return key
     }
 }
