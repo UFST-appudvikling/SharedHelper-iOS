@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Emad Ghorbaninia on 21/09/2022.
-//
-
 import Foundation
 import Security
 
