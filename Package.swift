@@ -51,7 +51,8 @@ let package = Package(
             dependencies: ["SecurityHandler"]),
         .target(
             name: "SecurityHandler",
-            dependencies: []),
+            dependencies: [],
+            resources: [.process("Resources")]),
         .target(
             name: "Tracking",
             dependencies: [

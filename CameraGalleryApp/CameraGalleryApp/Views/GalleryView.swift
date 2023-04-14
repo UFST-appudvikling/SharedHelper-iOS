@@ -19,27 +19,43 @@ struct GalleryView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if !viewModel.fetchedObjects.isEmpty {
-                    ScrollView {
-                        VStack(alignment: .leading) {
-                            ForEach(viewModel.groupedImages.keys.sorted(by: >), id: \.self) { key in
-                                Section(header: Text(key)
-                                    .font(.subheadline)
-                                    .bold()
-                                    .padding(.horizontal)) {
-                                        items(key: key)
-                                            .padding()
+                if viewModel.isAuthenticated {
+                    VStack {
+                        if !viewModel.fetchedObjects.isEmpty {
+                            ScrollView {
+                                VStack(alignment: .leading) {
+                                    ForEach(viewModel.groupedImages.keys.sorted(by: >), id: \.self) { key in
+                                        Section(header: Text(key)
+                                            .font(.subheadline)
+                                            .bold()
+                                            .padding(.horizontal)) {
+                                                items(key: key)
+                                                    .padding()
+                                            }
                                     }
+                                }
                             }
+                        } else {
+                            Text("No images captured")
+                                .font(.headline)
+                                .foregroundColor(.gray)
                         }
                     }
+                    .navigation(viewModel: viewModel)
                 } else {
-                    Text("No images captured")
-                        .font(.headline)
-                        .foregroundColor(.gray)
+                    Text("Please authenticate to access the content.")
+                    Button(action: {
+                        viewModel.authenticate()
+                    }) {
+                        Text("Authenticate with Touch ID/Face ID")
+                            .padding()
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
+                    .padding()
                 }
             }
-            .navigation(viewModel: viewModel)
         }
         .sheet(item: $selectedImage) { image in
             DetailView(viewModel: viewModel, selectedImage: image)

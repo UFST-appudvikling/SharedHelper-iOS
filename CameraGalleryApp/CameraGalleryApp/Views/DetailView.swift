@@ -32,6 +32,27 @@ struct DetailView: View {
                     
                     Spacer()
                 }
+                
+                Button(action: {
+                    // Action to send data to the server
+                    Task {
+                        try await viewModel.sendData(model: selectedImage)
+                    }
+                }) {
+                    HStack {
+                        Image(systemName: "arrow.up.circle")
+                            .font(.system(size: 20))
+                        
+                        Text("Send Data")
+                            .font(.system(size: 20))
+                    }
+                    .padding()
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(lineWidth: 2)
+                    )
+                }
+                .padding()
             }
             .navigationBarTitle(selectedImage.formattedDateOfData)
             .navigationBarTitleDisplayMode(.inline)

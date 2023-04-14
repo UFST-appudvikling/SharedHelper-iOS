@@ -10,6 +10,7 @@
 		7CB2DCA729DC231300AA2987 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CB2DCA629DC231300AA2987 /* DetailView.swift */; };
 		902C99EA29E58C7D006E18A2 /* SecurityHandler in Frameworks */ = {isa = PBXBuildFile; productRef = 902C99E929E58C7D006E18A2 /* SecurityHandler */; };
 		902C99EC29E58C7D006E18A2 /* UIComponents in Frameworks */ = {isa = PBXBuildFile; productRef = 902C99EB29E58C7D006E18A2 /* UIComponents */; };
+		902C99EE29E80156006E18A2 /* Networking in Frameworks */ = {isa = PBXBuildFile; productRef = 902C99ED29E80156006E18A2 /* Networking */; };
 		90490BF129DD8CF800BB1D33 /* GalleryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90490BF029DD8CF800BB1D33 /* GalleryViewModel.swift */; };
 		9053C50A29DAE5650091C891 /* CameraGalleryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9053C50929DAE5650091C891 /* CameraGalleryApp.swift */; };
 		9053C50E29DAE5660091C891 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9053C50D29DAE5660091C891 /* Assets.xcassets */; };
@@ -35,6 +36,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				902C99EE29E80156006E18A2 /* Networking in Frameworks */,
 				902C99EC29E58C7D006E18A2 /* UIComponents in Frameworks */,
 				902C99EA29E58C7D006E18A2 /* SecurityHandler in Frameworks */,
 			);
@@ -118,6 +120,7 @@
 			packageProductDependencies = (
 				902C99E929E58C7D006E18A2 /* SecurityHandler */,
 				902C99EB29E58C7D006E18A2 /* UIComponents */,
+				902C99ED29E80156006E18A2 /* Networking */,
 			);
 			productName = CameraGalleryApp;
 			productReference = 9053C50629DAE5650091C891 /* CameraGalleryApp.app */;
@@ -308,6 +311,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CameraGalleryApp/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need that";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "You need this to unlock the app";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -347,6 +351,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CameraGalleryApp/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need that";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "You need this to unlock the app";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -403,6 +408,10 @@
 		902C99EB29E58C7D006E18A2 /* UIComponents */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = UIComponents;
+		};
+		902C99ED29E80156006E18A2 /* Networking */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Networking;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
