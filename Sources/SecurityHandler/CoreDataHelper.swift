@@ -7,9 +7,9 @@ public struct CoreDataHelper {
 //TODO: Tests
     public let container: NSPersistentContainer
 
-    public init(name: String) {
+    public init() {
         
-        guard let modelURL = Bundle.module.url(forResource:name, withExtension: "momd") else { fatalError() }
+        guard let modelURL = Bundle.module.url(forResource:"StoredDataModel", withExtension: "momd") else { fatalError() }
         guard let model = NSManagedObjectModel(contentsOf: modelURL) else { fatalError() }
         container = NSPersistentContainer(name:name,managedObjectModel:model)
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in

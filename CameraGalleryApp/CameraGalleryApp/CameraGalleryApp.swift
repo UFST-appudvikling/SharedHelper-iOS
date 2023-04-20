@@ -11,7 +11,7 @@ import SecurityHandler
 
 @main
 struct CameraGalleryApp: App {
-    let persistenceController = CoreDataHelper(name: "StoredDataModel")
+    let persistenceController = CoreDataHelper()
 
     var body: some Scene {
         WindowGroup {
