@@ -18,40 +18,9 @@ struct GalleryView: View {
         NavigationView {
             VStack {
                 if viewModel.isAuthenticated {
-                    VStack {
-                        if !viewModel.fetchedObjects.isEmpty {
-                            ScrollView {
-                                VStack(alignment: .leading) {
-                                    ForEach(viewModel.groupedImages.keys.sorted(by: >), id: \.self) { key in
-                                        Section(header: Text(key)
-                                            .font(.subheadline)
-                                            .bold()
-                                            .padding(.horizontal)) {
-                                                items(key: key)
-                                                    .padding()
-                                            }
-                                    }
-                                }
-                            }
-                        } else {
-                            Text("No images captured")
-                                .font(.headline)
-                                .foregroundColor(.gray)
-                        }
-                    }
-                    .navigation(viewModel: viewModel)
+                    gallery
                 } else {
-                    Text("Please authenticate to access the content.")
-                    Button(action: {
-                        viewModel.authenticate()
-                    }) {
-                        Text("Authenticate with Touch ID/Face ID")
-                            .padding()
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                    }
-                    .padding()
+                    authenticationView
                 }
             }
         }
@@ -63,7 +32,46 @@ struct GalleryView: View {
         }
         
     }
-    func items(key: String ) -> some View {
+    var authenticationView: some View {
+        Group {
+            Text("Please authenticate to access the content.")
+            Button(action: {
+                viewModel.authenticate()
+            }) {
+                Text("Authenticate with Touch ID/Face ID")
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+            .padding()
+        }
+    }
+    var gallery: some View {
+        VStack {
+            if !viewModel.fetchedObjects.isEmpty {
+                ScrollView {
+                    VStack(alignment: .leading) {
+                        ForEach(viewModel.groupedImages.keys.sorted(by: >), id: \.self) { key in
+                            Section(header: Text(key)
+                                .font(.subheadline)
+                                .bold()
+                                .padding(.horizontal)) {
+                                    galleryItems(key: key)
+                                        .padding()
+                                }
+                        }
+                    }
+                }
+            } else {
+                Text("No images captured")
+                    .font(.headline)
+                    .foregroundColor(.gray)
+            }
+        }
+        .navigation(viewModel: viewModel)
+    }
+    func galleryItems(key: String ) -> some View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 10) {
             ForEach(viewModel.groupedImages[key] ?? [], id: \.self) { storedDataModel in
                 if let image = viewModel.decryptImage(data: storedDataModel.data) {
