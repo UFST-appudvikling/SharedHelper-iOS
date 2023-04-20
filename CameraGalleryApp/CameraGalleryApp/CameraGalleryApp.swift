@@ -16,7 +16,6 @@ struct CameraGalleryApp: App {
     var body: some Scene {
         WindowGroup {
             GalleryView(viewModel: FetchedObjectsViewModel(context: persistenceController.container.viewContext))
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
     

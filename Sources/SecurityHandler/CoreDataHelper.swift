@@ -3,7 +3,8 @@ import CoreData
 import UIKit
    
 public struct CoreDataHelper {
-
+//TODO: Error handling
+//TODO: Tests
     public let container: NSPersistentContainer
 
     public init(name: String) {
@@ -47,12 +48,12 @@ public struct CoreDataHelper {
         }
     }
     
-    public static func deleteStoredDataModel(_ image: StoredDataModel, viewContext: NSManagedObjectContext) {
+    public static func deleteStoredDataModel(_ model: StoredDataModel, viewContext: NSManagedObjectContext) {
         do {
-            viewContext.delete(image)
+            viewContext.delete(model)
             try viewContext.save()
         } catch {
-            print("Error fetching images: \(error)")
+            print("Error fetching models: \(error)")
         }
     }
     public static func saveDataToCoreData(data: Data,

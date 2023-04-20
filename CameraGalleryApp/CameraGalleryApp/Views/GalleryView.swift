@@ -10,10 +10,8 @@ import SecurityHandler
 import UIComponents
 
 struct GalleryView: View {
-    @Environment(\.managedObjectContext) var viewContext
     @State private var selectedImage: StoredDataModel? = nil
     @State private var newImage: StoredDataModel? = nil
-
     @StateObject var viewModel: FetchedObjectsViewModel
 
     var body: some View {
