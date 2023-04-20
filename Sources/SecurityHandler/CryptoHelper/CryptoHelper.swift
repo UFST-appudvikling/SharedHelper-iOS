@@ -2,8 +2,10 @@ import Foundation
 import CryptoKit
 import Security
 
-public extension SecurityHelper {
-     class CryptoHelper {
+
+public extension SecurityHandler {
+    
+    class CryptoHelper: StaticCryptoHelperProtocol {
         public static func encryptData(_ data: Data,
                                        symmetricKeyIdentifier: String) throws -> Data {
             let sealedBox = try AES.GCM.seal(data, using: CryptoHelper.getSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier))
@@ -29,12 +31,12 @@ public extension SecurityHelper {
     }
 }
 
-extension SecurityHelper.CryptoHelper {
+extension SecurityHandler.CryptoHelper {
     private static func getSymmetricKey(symmetricKeyIdentifier: String) throws -> SymmetricKey {
         do {
-            return try SecurityHelper.CryptoHelper.loadSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier)
+            return try SecurityHandler.CryptoHelper.loadSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier)
         } catch {
-            return try SecurityHelper.CryptoHelper.generateAndStoreSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier)
+            return try SecurityHandler.CryptoHelper.generateAndStoreSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier)
         }
     }
     private static func storeSymmetricKey(_ key: SymmetricKey, symmetricKeyIdentifier: String) throws {

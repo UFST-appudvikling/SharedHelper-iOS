@@ -10,7 +10,7 @@ private let secReturnData = kSecReturnData as String
 private let secValueData = kSecValueData as String
 private let secAttrAccessible = kSecAttrAccessible as String
 
-public class SecurityHelper {
+public class SecurityHandler {
 
     public
     static func search(matching identifier: String) -> Data? {

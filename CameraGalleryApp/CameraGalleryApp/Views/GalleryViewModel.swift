@@ -47,7 +47,7 @@ class FetchedObjectsViewModel: NSObject, NSFetchedResultsControllerDelegate, Obs
     func decryptData(data: Data?) -> Data? {
         do {
             if let data = data {
-                return try SecurityHelper.CryptoHelper.decryptData(data, symmetricKeyIdentifier: "dk.ufst.CameraGalleryApp.symmetricKey")
+                return try SecurityHandler.CryptoHelper.decryptData(data, symmetricKeyIdentifier: "dk.ufst.CameraGalleryApp.symmetricKey")
             } else {
                 return nil
             }
@@ -72,7 +72,7 @@ class FetchedObjectsViewModel: NSObject, NSFetchedResultsControllerDelegate, Obs
             multipartForm.addJson(named: "document", value: documentModelString)
             multipartForm.addField(named: "key",
                                    filename: "\(String(UInt(bitPattern: model.id))).key",
-                                   data: try SecurityHelper.CryptoHelper.getEncryptedKeyByUsingRSAPublicKey(symmetricKeyIdentifier: "dk.ufst.CameraGalleryApp.symmetricKey"))
+                                   data: try SecurityHandler.CryptoHelper.getEncryptedKeyByUsingRSAPublicKey(symmetricKeyIdentifier: "dk.ufst.CameraGalleryApp.symmetricKey"))
             multipartForm.addField(named: "data",
                                    filename: "\(String(UInt(bitPattern: model.id))).dat",
                                    data: encryptedData)

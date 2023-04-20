@@ -73,6 +73,9 @@ let package = Package(
         ),
         .testTarget(
             name: "VersionCheckTests",
-            dependencies: ["VersionCheck"])
+            dependencies: ["VersionCheck"]),
+        .testTarget(
+            name: "SecurityHandlerTests",
+            dependencies: ["SecurityHandler"])
     ]
 )
