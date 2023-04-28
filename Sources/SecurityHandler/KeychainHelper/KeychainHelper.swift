@@ -7,6 +7,9 @@
 
 import Foundation
 
+/// Documentaion
+/// These lets are the keys that are used in the Keychain API.
+/// They are used in the KeychainHelper class.
 private let secClass = kSecClass as String
 private let secAttrService = kSecAttrService as String
 private let secAttrGeneric = kSecAttrGeneric as String
@@ -17,7 +20,49 @@ private let secValueData = kSecValueData as String
 private let secAttrAccessible = kSecAttrAccessible as String
 
 extension SecurityHandler {
-    
+/// Documentaion
+/// The 'KeychainHelper' class is a wrapper around the Keychain API that helps to make working with Keychain API a little easier.
+/// It has different methods for saving, retrieving, updating and deleting items from the Keychain.
+/// It has some public and some private methods. The public methods are the ones that you will use in your code.
+/// The private methods are there to help the public methods.
+/// The public methods are:
+///
+/// 1. create(value: String, forIdentifier identifier: String) -> Bool
+/// Parameters:
+/// value: The value to be saved in the Keychain.
+/// identifier: The identifier to be used to uniquely identify the value in the Keychain.
+/// Returns: A boolean value indicating whether the value was successfully saved in the Keychain.
+///
+/// 2. string(matching identifier: String) -> String?
+/// Parameters:
+/// identifier: The identifier that was used to save the value in the Keychain.
+/// Returns: The value that was saved in the Keychain.
+///
+/// 3. remove(identifier: String) -> Bool
+/// Parameters:
+/// identifier: The identifier that was used to save the value in the Keychain.
+/// Returns: A boolean value indicating whether the value was successfully removed from the Keychain.
+///
+/// 4. search(matching cfDictionary: CFDictionary) -> Data?
+/// Parameters:
+/// cfDictionary: The dictionary to be used to search for the value in the Keychain.
+/// Returns: The value that was saved in the Keychain.
+///
+/// 5. create(cfDictionary: CFDictionary) -> Bool
+/// Parameters:
+/// cfDictionary: The dictionary to be used to save the value in the Keychain.
+/// Returns: A boolean value indicating whether the value was successfully saved in the Keychain.
+///
+/// 6. update(cfDictionary: CFDictionary) -> Bool
+/// Parameters:
+/// cfDictionary: The dictionary to be used to update the value in the Keychain.
+/// Returns: A boolean value indicating whether the value was successfully updated in the Keychain.
+///
+/// 7. remove(cfDictionary: CFDictionary) -> Bool
+/// Parameters:
+/// cfDictionary: The dictionary to be used to remove the value in the Keychain.
+/// Returns: A boolean value indicating whether the value was successfully removed from the Keychain.
+
     public class KeychainHelper: KeychainHelperProtocol {
         public static func search(matching cfDictionary: CFDictionary) -> Data? {
             var result: AnyObject?

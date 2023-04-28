@@ -11,6 +11,14 @@ import CryptoKit
 import Security
 @testable import SecurityHandler
 
+/// Documentaion
+/// The CryptoHelperTests is a Class for Testing CryptoHelper.
+/// It has some test cases for testing Encryption and Decryption and getEncryptedKeyByUsingRSAPublicKey by using MockKeychainHelper.
+/// It has the following test cases:
+/// 1. testEncryptDecrypt()
+/// It tests Encryption and Decryption
+/// 2. testGetEncryptedKeyByUsingRSAPublicKey()
+/// It tests getEncryptedKeyByUsingRSAPublicKey
 final class CryptoHelperTests: XCTestCase {
     
     override func setUp() {

@@ -4,7 +4,22 @@ import Security
 
 
 public extension SecurityHandler {
-    
+    /// Documentaion
+    /// The CryptoHelper is a way to encrypt and decrypt data.
+    /// It has two main functions encryptData and decryptData.
+    /// The public methods are:
+    /// 1. encryptData(_ data: Data, symmetricKeyIdentifier: String) throws -> Data
+    /// Parameters:
+    /// data: The data to be encrypted.
+    /// symmetricKeyIdentifier: The identifier to be used to uniquely identify the symmetric key in the Keychain.
+    /// Returns: The encrypted data.
+    /// Throws: An error of type CustomError.
+    /// 2. decryptData(_ encryptedData: Data, symmetricKeyIdentifier: String) throws -> Data
+    /// Parameters:
+    /// encryptedData: The data to be decrypted.
+    /// symmetricKeyIdentifier: The identifier to be used to uniquely identify the symmetric key in the Keychain.
+    /// Returns: The decrypted data.
+    /// Throws: An error of type CustomError.
     class CryptoHelper: CryptoHelperProtocol {
         public static func encryptData(_ data: Data,
                                        symmetricKeyIdentifier: String) throws -> Data {
@@ -62,9 +77,12 @@ public extension SecurityHandler {
 }
 
 extension SecurityHandler.CryptoHelper {
+    /// Documentaion
+    /// The getSymmetricKey is a way to get the symmetric key from the Keychain.
+    /// It use the SecurityHandler.KeychainHelper to get the symmetric key from the Keychain.
     @discardableResult
     static func getSymmetricKey(symmetricKeyIdentifier: String,
-                                        keychain: KeychainHelperProtocol.Type) throws -> SymmetricKey {
+                                keychain: KeychainHelperProtocol.Type) throws -> SymmetricKey {
         do {
             return try SecurityHandler.CryptoHelper.loadSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier, keychain: keychain)
         } catch {

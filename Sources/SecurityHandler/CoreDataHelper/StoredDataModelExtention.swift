@@ -6,7 +6,9 @@
 //
 
 import Foundation
-
+/// Documentaion
+/// This is an extension for StoredDataModel.
+/// It has some computed properties for formatting the date and checking the expiration date.
 extension StoredDataModel {
 
     public var formattedDateOfData: String {

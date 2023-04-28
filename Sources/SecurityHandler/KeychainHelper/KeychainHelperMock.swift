@@ -6,6 +6,12 @@
 //
 
 import Foundation
+/// Documentaion
+/// The MockKeychainHelper is a Class for Testing KeychainHelper, that conforms to KeychainHelperProtocol.
+/// And it's been used in CryptoHelperTests.swift and not being exposed to the public.
+/// It has different methods for saving, retrieving, updating and deleting items from the Keychain.
+/// It use a static dictionary to store the values.
+
 class MockKeychainHelper: KeychainHelperProtocol {
     private static var store: [String: CFTypeRef] = [:]
 
