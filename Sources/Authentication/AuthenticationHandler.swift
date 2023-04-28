@@ -8,6 +8,7 @@
 import Foundation
 import AuthenticationServices
 import UIKit
+import SecurityHandler
 /// Main functionality of this is like the following list:
 /// 
 /// - Fetch token from Keychain
@@ -26,6 +27,7 @@ public final class AuthenticationHandler: NSObject, ObservableObject {
     internal var configuration: Configuration?
     internal let contextProvider: ASPresentationAnchor?
     internal var loginType: LoginType
+    internal let tokenIdentifier: String
     internal enum LoginType: Equatable {
         case automatic(AutomatedLoginModel)
         case manual
@@ -63,10 +65,12 @@ public final class AuthenticationHandler: NSObject, ObservableObject {
     /// ````
     /// - Parameter configuration: One way you can using this lib, look at example
     /// - Parameter contextProvider: Provide a window to show the login, look at example
-    public init(configuration: Configuration, contextProvider: ASPresentationAnchor) {
+    /// - Parameter tokenIdentifier: An Identifier to be used for Keychain
+    public init(configuration: Configuration, contextProvider: ASPresentationAnchor, tokenIdentifier: String) {
         self.configuration = configuration
         self.contextProvider = contextProvider
         self.loginType = .manual
+        self.tokenIdentifier = tokenIdentifier
     }
     /// - Example:
     /// ````
@@ -84,11 +88,13 @@ public final class AuthenticationHandler: NSObject, ObservableObject {
     /// authenticationHandler = AuthenticationHandler(automatedLoginModel: loginModel )
     /// ````
     /// - Parameter automatedLoginModel: One way you can using this lib, look at example
+    /// - Parameter tokenIdentifier: An Identifier to be used for Keychain
 
-    public init(automatedLoginModel: AutomatedLoginModel) {
+    public init(automatedLoginModel: AutomatedLoginModel, tokenIdentifier: String) {
         self.configuration = nil
         self.contextProvider = nil
         self.loginType = .automatic(automatedLoginModel)
+        self.tokenIdentifier = tokenIdentifier
     }
     
     /// Gives User Info coming from OAuth server by Fetching token and Request to fetch user info
@@ -122,7 +128,9 @@ public final class AuthenticationHandler: NSObject, ObservableObject {
     /// - Returns: (``AuthenticationHandler/TokenModel``, ``AuthenticationHandler/TokenSource``)
     /// - Throws: ``AuthenticationHandler/CustomError``
     public func fetchToken() async throws -> (TokenModel, TokenSource) {
-        if let token = KeychainHelper.retrieveToken(), loginType == .manual {
+        if let wrappedToken = SecurityHandler.KeychainHelper.string(matching: tokenIdentifier),
+           let token = AuthenticationHandler.unwrap(wrappedToken: wrappedToken),
+            loginType == .manual {
             return try await validateTokenOrRefresh(token: token)
         } else {
             switch loginType {
@@ -152,16 +160,17 @@ public final class AuthenticationHandler: NSObject, ObservableObject {
     ///
     /// - Returns: Optinal ``AuthenticationHandler/TokenModel``
     public func checkTokenIfExist() -> TokenModel? {
-        if let token = KeychainHelper.retrieveToken(), token.refreshTokenIsValid {
+        guard let wrappedToken = SecurityHandler.KeychainHelper.string(matching: tokenIdentifier) else { return nil }
+        if let token = AuthenticationHandler.unwrap(wrappedToken: wrappedToken), token.refreshTokenIsValid {
             return token
         } else {
-            KeychainHelper.invalidateToken()
+            SecurityHandler.KeychainHelper.remove(identifier: tokenIdentifier)
             return nil
         }
     }
     /// Invalidate token from keychain
     public func logout() {
-        KeychainHelper.invalidateToken()
+        SecurityHandler.KeychainHelper.remove(identifier: tokenIdentifier)
     }
 }
 // MARK: - Private Methodes
@@ -189,7 +198,7 @@ extension AuthenticationHandler {
     // MARK: Networking Methods
     private func getAuthorizationCode () async -> Result<String, Error> {
         return await withCheckedContinuation { [weak self] continuation in
-            
+            guard let self = self else { return continuation.resume(returning: .failure(CustomError.invalidData)) }
             guard let url = createAuthorizationURL() else { return continuation.resume(returning: .failure(CustomError.invalidURL)) }
             guard let configuration = configuration else { return continuation.resume(returning: .failure(CustomError.invalidConfiguration)) }
             if !sheetIsActive {
@@ -234,15 +243,15 @@ extension AuthenticationHandler {
                 body: body
             )
             if let response: TokenModel = try await sendRequest(request: request) {
-                KeychainHelper.invalidateToken()
-                KeychainHelper.storeToken(response)
+                SecurityHandler.KeychainHelper.remove(identifier: tokenIdentifier)
+                SecurityHandler.KeychainHelper.create(value: response.wrap, forIdentifier: tokenIdentifier)
                 return response
             } else {
-                KeychainHelper.invalidateToken()
+                SecurityHandler.KeychainHelper.remove(identifier: tokenIdentifier)
                 throw CustomError.invalidData
             }
         } catch let error {
-            KeychainHelper.invalidateToken()
+            SecurityHandler.KeychainHelper.remove(identifier: tokenIdentifier)
 
             if case let CustomError.unexpectedStatusCode(code) = error, (400..<500).contains(code) {
                 return try await loginByShowingSheet()
@@ -260,18 +269,15 @@ extension AuthenticationHandler {
                 body: automatedLoginModel.user.asJsonData
             )
             if let response: TokenModel = try await sendRequest(request: request) {
-                KeychainHelper.invalidateToken()
-
-                KeychainHelper.storeToken(response)
+                SecurityHandler.KeychainHelper.remove(identifier: tokenIdentifier)
+                SecurityHandler.KeychainHelper.create(value: response.wrap, forIdentifier: tokenIdentifier)
                 return response
             } else {
-                KeychainHelper.invalidateToken()
-
+                SecurityHandler.KeychainHelper.remove(identifier: tokenIdentifier)
                 throw CustomError.invalidData
             }
         } catch let error {
-            KeychainHelper.invalidateToken()
-
+            SecurityHandler.KeychainHelper.remove(identifier: tokenIdentifier)
             throw error
         }
     }

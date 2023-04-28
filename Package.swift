@@ -17,6 +17,9 @@ let package = Package(
             name: "Authentication",
             targets: ["Authentication"]),
         .library(
+            name: "SecurityHandler",
+            targets: ["SecurityHandler"]),
+        .library(
             name: "Tracking",
             targets: ["Tracking"]),
         .library(name: "VersionCheck",
@@ -45,7 +48,11 @@ let package = Package(
             dependencies: ["Networking"]),
         .target(
             name: "Authentication",
-            dependencies: []),
+            dependencies: ["SecurityHandler"]),
+        .target(
+            name: "SecurityHandler",
+            dependencies: [],
+            resources: [.process("Resources")]),
         .target(
             name: "Tracking",
             dependencies: [
@@ -66,6 +73,9 @@ let package = Package(
         ),
         .testTarget(
             name: "VersionCheckTests",
-            dependencies: ["VersionCheck"])
+            dependencies: ["VersionCheck"]),
+        .testTarget(
+            name: "SecurityHandlerTests",
+            dependencies: ["SecurityHandler"])
     ]
 )
