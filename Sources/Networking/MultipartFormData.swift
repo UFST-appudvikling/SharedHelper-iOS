@@ -8,11 +8,11 @@
 import Foundation
 public extension Networking {
     struct MultipartFormData {
-        public init() {}
         
         let boundary: String = UUID().uuidString
         private(set) var httpBody = Data()
         
+        public init() {}
         public mutating func addJson(named name: String, value: String) {
             httpBody.addField("--\(boundary)")
             httpBody.addField("Content-Disposition: form-data; name=\"\(name)\"")

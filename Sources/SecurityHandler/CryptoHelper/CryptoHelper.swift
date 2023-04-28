@@ -54,16 +54,16 @@ public extension SecurityHandler {
             let decryptedData = try AES.GCM.open(sealedBox, using: CryptoHelper.getSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier, keychain: keychain))
             return decryptedData
         }
-        public static func getEncryptedKeyByUsingRSAPublicKey(publicKeyData:Data? = nil,
+        public static func getEncryptedKeyByUsingRSAPublicKey(publicKeyData:Data,
                                                               symmetricKeyIdentifier: String) throws -> Data {
             try getEncryptedKeyByUsingRSAPublicKeyInternal(publicKeyData: publicKeyData, symmetricKeyIdentifier: symmetricKeyIdentifier, keychain:  SecurityHandler.KeychainHelper.self)
         }
-        static func getEncryptedKeyByUsingRSAPublicKeyTest(publicKeyData:Data? = nil,
+        static func getEncryptedKeyByUsingRSAPublicKeyTest(publicKeyData:Data,
                                                            symmetricKeyIdentifier: String,
                                                            keychain: KeychainHelperProtocol.Type) throws -> Data {
             try getEncryptedKeyByUsingRSAPublicKeyInternal(publicKeyData: publicKeyData, symmetricKeyIdentifier: symmetricKeyIdentifier, keychain: keychain)
         }
-        private static func getEncryptedKeyByUsingRSAPublicKeyInternal(publicKeyData:Data? = nil,
+        private static func getEncryptedKeyByUsingRSAPublicKeyInternal(publicKeyData:Data,
                                                                        symmetricKeyIdentifier: String,
                                                                        keychain: KeychainHelperProtocol.Type) throws -> Data {
             try getSymmetricKey(symmetricKeyIdentifier: symmetricKeyIdentifier, keychain: keychain)
@@ -141,22 +141,7 @@ extension SecurityHandler.CryptoHelper {
         return key
     }
     
-    private static func loadRSAPublicKey() throws -> Data {
-        let resourceFileName = "key"
-        
-        guard let fileURL = Bundle.module.url(forResource: resourceFileName, withExtension: nil) else {
-            throw SecurityHandler.CustomError.resourceError(errorDescription: "Error: Resource file not found")
-        }
-        
-        do {
-            let keyData = try Data(contentsOf: fileURL)
-            return keyData
-        } catch {
-            throw SecurityHandler.CustomError.invalidData
-        }
-    }
-    private static func rsaPublicKeyFromPEM(derKey: Data?) throws -> SecKey {
-        let derKey = try loadRSAPublicKey()
+    private static func rsaPublicKeyFromPEM(derKey: Data) throws -> SecKey {
         let base64Key = derKey.base64EncodedString()
         
         guard let base64Data = Data(base64Encoded: base64Key) else {

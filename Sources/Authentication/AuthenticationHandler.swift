@@ -65,6 +65,7 @@ public final class AuthenticationHandler: NSObject, ObservableObject {
     /// ````
     /// - Parameter configuration: One way you can using this lib, look at example
     /// - Parameter contextProvider: Provide a window to show the login, look at example
+    /// - Parameter tokenIdentifier: An Identifier to be used for Keychain
     public init(configuration: Configuration, contextProvider: ASPresentationAnchor, tokenIdentifier: String) {
         self.configuration = configuration
         self.contextProvider = contextProvider
@@ -87,6 +88,7 @@ public final class AuthenticationHandler: NSObject, ObservableObject {
     /// authenticationHandler = AuthenticationHandler(automatedLoginModel: loginModel )
     /// ````
     /// - Parameter automatedLoginModel: One way you can using this lib, look at example
+    /// - Parameter tokenIdentifier: An Identifier to be used for Keychain
 
     public init(automatedLoginModel: AutomatedLoginModel, tokenIdentifier: String) {
         self.configuration = nil

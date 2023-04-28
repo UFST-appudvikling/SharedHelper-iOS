@@ -43,9 +43,24 @@ final class CryptoHelperTests: XCTestCase {
     
     func testGetEncryptedKeyByUsingRSAPublicKey() {
         do {
-            _ = try SecurityHandler.CryptoHelper.getEncryptedKeyByUsingRSAPublicKeyTest(symmetricKeyIdentifier: "com.example.symmetricKeyIdentifier", keychain: MockKeychainHelper.self)
+            _ = try SecurityHandler.CryptoHelper.getEncryptedKeyByUsingRSAPublicKeyTest(publicKeyData: loadRSAPublicKey(), symmetricKeyIdentifier: "com.example.symmetricKeyIdentifier", keychain: MockKeychainHelper.self)
         } catch {
             XCTFail("Error: \(error.localizedDescription)")
+        }
+    }
+    
+    private func loadRSAPublicKey() throws -> Data {
+        let resourceFileName = "key"
+        
+        guard let fileURL = Bundle.module.url(forResource: resourceFileName, withExtension: nil) else {
+            throw SecurityHandler.CustomError.resourceError(errorDescription: "Error: Resource file not found")
+        }
+        
+        do {
+            let keyData = try Data(contentsOf: fileURL)
+            return keyData
+        } catch {
+            throw SecurityHandler.CustomError.invalidData
         }
     }
 }
