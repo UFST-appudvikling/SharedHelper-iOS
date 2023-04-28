@@ -4,8 +4,6 @@ import UIKit
 
 
 public struct CoreDataHelper {
-//TODO: Error handling
-//TODO: Tests
     public let container: NSPersistentContainer
 
     public init() {
@@ -32,60 +30,53 @@ public struct CoreDataHelper {
         }
     }
     
-    public static func deleteStoredDataModel(_ model: StoredDataModel, viewContext: NSManagedObjectContext) {
-        do {
-            viewContext.delete(model)
-            try viewContext.save()
-        } catch {
-            print("Error fetching models: \(error)")
-        }
+    public static func deleteStoredDataModel(_ model: StoredDataModel, viewContext: NSManagedObjectContext) throws {
+        viewContext.delete(model)
+        try viewContext.save()
     }
-    public static func saveDataToCoreData(data: Data,
-                                          viewContext: NSManagedObjectContext,
-                                          symmetricKeyIdentifier: String,
-                                          expiryDuration: TimeInterval) -> StoredDataModel? {
-        CoreDataHelper.saveDataToCoreDataInternal(data: data,
-                                                    viewContext: viewContext,
-                                                    symmetricKeyIdentifier: symmetricKeyIdentifier,
-                                                    expiryDuration: expiryDuration,
-                                                    cryptoHelper: SecurityHandler.CryptoHelper.self)
-    }
+  
 }
 
 extension CoreDataHelper {
-    static func saveDataToCoreDataInternal(data: Data,
-                                             viewContext: NSManagedObjectContext,
-                                             symmetricKeyIdentifier: String,
-                                             expiryDuration: TimeInterval,
-                                             cryptoHelper: StaticCryptoHelperProtocol.Type) -> StoredDataModel? {
-        let capturedImage = StoredDataModel(context: viewContext)
-        
-        do {
-            let encryptedData = try cryptoHelper.encryptData(data, symmetricKeyIdentifier: symmetricKeyIdentifier)
-            capturedImage.data = encryptedData
-            capturedImage.date = Date()
-            capturedImage.expirationDuration = expiryDuration
-            try viewContext.save()
-            return capturedImage
-        } catch {
-            print("Error saving image to Core Data: \(error)")
-            return nil
-        }
+    public static func saveDataToCoreData(data: Data,
+                                          viewContext: NSManagedObjectContext,
+                                          symmetricKeyIdentifier: String,
+                                          expiryDuration: TimeInterval) throws -> StoredDataModel {
+        try CoreDataHelper.saveDataToCoreDataPrivate(data: data,
+                                                      viewContext: viewContext,
+                                                      symmetricKeyIdentifier: symmetricKeyIdentifier,
+                                                      expiryDuration: expiryDuration,
+                                                      cryptoHelper: SecurityHandler.CryptoHelper.self)
     }
-    
     static func saveDataToCoreDataForTesting(data: Data,
                                              viewContext: NSManagedObjectContext,
                                              symmetricKeyIdentifier: String,
                                              expiryDuration: TimeInterval,
-                                             cryptoHelper: StaticCryptoHelperProtocol.Type) -> StoredDataModel? {
-        return saveDataToCoreDataInternal(data: data,
-                                          viewContext: viewContext,
-                                          symmetricKeyIdentifier: symmetricKeyIdentifier,
-                                          expiryDuration: expiryDuration,
-                                          cryptoHelper: cryptoHelper)
+                                             cryptoHelper: CryptoHelperProtocol.Type) throws -> StoredDataModel {
+        return try saveDataToCoreDataPrivate(data: data,
+                                              viewContext: viewContext,
+                                              symmetricKeyIdentifier: symmetricKeyIdentifier,
+                                              expiryDuration: expiryDuration,
+                                              cryptoHelper: cryptoHelper)
+    }
+    private static func saveDataToCoreDataPrivate(data: Data,
+                                                   viewContext: NSManagedObjectContext,
+                                                   symmetricKeyIdentifier: String,
+                                                   expiryDuration: TimeInterval,
+                                                   cryptoHelper: CryptoHelperProtocol.Type) throws -> StoredDataModel {
+        let capturedImage = StoredDataModel(context: viewContext)
+        
+        let encryptedData = try cryptoHelper.encryptData(data, symmetricKeyIdentifier: symmetricKeyIdentifier)
+        capturedImage.data = encryptedData
+        capturedImage.date = Date()
+        capturedImage.expirationDuration = expiryDuration
+        try viewContext.save()
+        return capturedImage
     }
     
-    private func deleteExpiredData(viewContext: NSManagedObjectContext) {
+    
+    
+    private func deleteExpiredData(viewContext: NSManagedObjectContext)  {
         let fetchRequest: NSFetchRequest<StoredDataModel> = StoredDataModel.fetchRequest()
         
         do {

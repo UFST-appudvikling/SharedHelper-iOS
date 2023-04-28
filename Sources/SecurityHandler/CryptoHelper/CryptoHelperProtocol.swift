@@ -6,6 +6,7 @@
 //
 
 import Foundation
-protocol StaticCryptoHelperProtocol {
+protocol CryptoHelperProtocol {
     static func encryptData(_ data: Data, symmetricKeyIdentifier: String) throws -> Data
+    static func decryptData(_ encryptedData: Data, symmetricKeyIdentifier: String) throws -> Data
 }

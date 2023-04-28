@@ -6,7 +6,7 @@
 //
 
 import Foundation
-public extension SecurityHandler.CryptoHelper {
+public extension SecurityHandler {
     /// Mapped as much as possible all the errors in the project to these
     enum CustomError: Error, LocalizedError, Equatable {
         case encryptionError(errorDescription: String)

@@ -38,12 +38,15 @@ class CoreDataHelperTests: XCTestCase {
         let data = Data("Test Data".utf8)
         let symmetricKeyIdentifier = "testKey"
         let expiryDuration: TimeInterval = 3600
-
-        let storedData = CoreDataHelper.saveDataToCoreDataForTesting(data: data, viewContext: viewContext, symmetricKeyIdentifier: symmetricKeyIdentifier, expiryDuration: expiryDuration, cryptoHelper: MockCryptoHelper.self)
-        XCTAssertNotNil(storedData)
-
-        let fetchedData = CoreDataHelper.fetch(viewContext: viewContext)
-        XCTAssertFalse(fetchedData.isEmpty)
+        do {
+            let storedData = try CoreDataHelper.saveDataToCoreDataForTesting(data: data, viewContext: viewContext, symmetricKeyIdentifier: symmetricKeyIdentifier, expiryDuration: expiryDuration, cryptoHelper: SecurityHandler.MockCryptoHelper.self)
+            XCTAssertNotNil(storedData)
+            
+            let fetchedData = CoreDataHelper.fetch(viewContext: viewContext)
+            XCTAssertFalse(fetchedData.isEmpty)
+        } catch {
+            XCTAssertThrowsError(error)
+        }
     }
 
     func testDeleteStoredDataModel() {
@@ -51,43 +54,58 @@ class CoreDataHelperTests: XCTestCase {
         let symmetricKeyIdentifier = "testKey"
         let expiryDuration: TimeInterval = 3600
 
-        let storedData = CoreDataHelper.saveDataToCoreDataForTesting(data: data, viewContext: viewContext, symmetricKeyIdentifier: symmetricKeyIdentifier, expiryDuration: expiryDuration, cryptoHelper: MockCryptoHelper.self)
-        XCTAssertNotNil(storedData)
+        do {
+            let storedData = try CoreDataHelper.saveDataToCoreDataForTesting(data: data, viewContext: viewContext, symmetricKeyIdentifier: symmetricKeyIdentifier, expiryDuration: expiryDuration, cryptoHelper: SecurityHandler.MockCryptoHelper.self)
+            XCTAssertNotNil(storedData)
 
-        CoreDataHelper.deleteStoredDataModel(storedData!, viewContext: viewContext)
+            try CoreDataHelper.deleteStoredDataModel(storedData, viewContext: viewContext)
+            
+            let fetchedData = CoreDataHelper.fetch(viewContext: viewContext)
+            XCTAssertTrue(fetchedData.filter({ model in model == storedData }).isEmpty)
+        } catch {
+            XCTAssertThrowsError(error)
+        }
+        
 
-        let fetchedData = CoreDataHelper.fetch(viewContext: viewContext)
-        XCTAssertTrue(fetchedData.filter({ model in model == storedData }).isEmpty)
     }
 
     func testStoredDataModelExpiration() {
         let data = Data("Test Data".utf8)
         let symmetricKeyIdentifier = "testKey"
         let expiryDuration: TimeInterval = -3600
-
-        let storedData = CoreDataHelper.saveDataToCoreDataForTesting(data: data, viewContext: viewContext, symmetricKeyIdentifier: symmetricKeyIdentifier, expiryDuration: expiryDuration, cryptoHelper: MockCryptoHelper.self)
-        XCTAssertNotNil(storedData)
-
-        XCTAssertTrue(storedData!.isExpired)
+        do {
+            let storedData = try CoreDataHelper.saveDataToCoreDataForTesting(data: data, viewContext: viewContext, symmetricKeyIdentifier: symmetricKeyIdentifier, expiryDuration: expiryDuration, cryptoHelper: SecurityHandler.MockCryptoHelper.self)
+            XCTAssertNotNil(storedData)
+            
+            XCTAssertTrue(storedData.isExpired)
+        } catch {
+            XCTAssertThrowsError(error)
+        }
     }
 
     func testFormattedDateOfData() {
         let data = Data("Test Data".utf8)
         let symmetricKeyIdentifier = "testKey"
         let expiryDuration: TimeInterval = 3600
-
-        let storedData = CoreDataHelper.saveDataToCoreDataForTesting(data: data, viewContext: viewContext, symmetricKeyIdentifier: symmetricKeyIdentifier, expiryDuration: expiryDuration, cryptoHelper: MockCryptoHelper.self)
-        XCTAssertNotNil(storedData)
-        XCTAssertNotNil(storedData!.formattedDateOfData)
+        do {
+            let storedData = try CoreDataHelper.saveDataToCoreDataForTesting(data: data, viewContext: viewContext, symmetricKeyIdentifier: symmetricKeyIdentifier, expiryDuration: expiryDuration, cryptoHelper: SecurityHandler.MockCryptoHelper.self)
+            XCTAssertNotNil(storedData)
+            XCTAssertNotNil(storedData.formattedDateOfData)
+        } catch {
+            XCTAssertThrowsError(error)
+        }
     }
 
     func testExpirationDay() {
         let data = Data("Test Data".utf8)
         let symmetricKeyIdentifier = "testKey"
         let expiryDuration: TimeInterval = 3600
-
-        let storedData = CoreDataHelper.saveDataToCoreDataForTesting(data: data, viewContext: viewContext, symmetricKeyIdentifier: symmetricKeyIdentifier, expiryDuration: expiryDuration, cryptoHelper: MockCryptoHelper.self)
-        XCTAssertNotNil(storedData)
-        XCTAssertNotNil(storedData!.expirationDay)
+        do {
+            let storedData = try CoreDataHelper.saveDataToCoreDataForTesting(data: data, viewContext: viewContext, symmetricKeyIdentifier: symmetricKeyIdentifier, expiryDuration: expiryDuration, cryptoHelper: SecurityHandler.MockCryptoHelper.self)
+            XCTAssertNotNil(storedData)
+            XCTAssertNotNil(storedData.expirationDay)
+        } catch {
+            XCTAssertThrowsError(error)
+        }
     }
 }
