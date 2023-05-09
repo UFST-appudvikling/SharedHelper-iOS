@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Nicolai Dam on 13/02/2023.
 //
@@ -145,7 +145,6 @@ private extension FeedbackView {
                     }
             } else {
                 feedbackView
-                    .padding(24)
                     .background(Color.white)
                     .cornerRadius(4)
                     .overlay { closeButton }
@@ -193,59 +192,67 @@ private extension FeedbackView {
     }
     
     var feedbackView: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(localization.header)
-                .font(Font.academySans(size: 28, type: .skatBold))
-                .foregroundColor(styling.secondaryColor)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity)
-                .multilineTextAlignment(.center)
-                .padding(.top, 30)
-                .dynamicTypeSize(.xxxLarge)
-            Text(localization.boxTitle)
-                .font(Font.academySans(size: 17, type: .skatRegular))
-                .foregroundColor(styling.secondaryColor)
-                .dynamicTypeSize(.xLarge)
-            TextEditor(text: $inputTextField)
-                .padding(.all, 10)
-                .focused($textfieldIsFocused)
-                .accessibilityHint(localization.privacyPolicyDisclamer)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 4)
-                        .stroke(Color.gray, lineWidth: 1)
-                )
-                .onAppear {
-                    // Setting keyboard to focused if voice is not running
-                    if !UIAccessibility.isVoiceOverRunning {
-                        self.textfieldIsFocused = true
+        GeometryReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text(localization.header)
+                        .font(Font.academySans(size: 28, type: .skatBold))
+                        .foregroundColor(styling.secondaryColor)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
+                        .padding(.top, 30)
+                        .dynamicTypeSize(.xxxLarge)
+                    Text(localization.boxTitle)
+                        .font(Font.academySans(size: 17, type: .skatRegular))
+                        .foregroundColor(styling.secondaryColor)
+                        .dynamicTypeSize(.xLarge)
+                    TextEditor(text: $inputTextField)
+                        .padding(.all, 10)
+                        .focused($textfieldIsFocused)
+                        .accessibilityHint(localization.privacyPolicyDisclamer)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(Color.gray, lineWidth: 1)
+                        )
+                        .onAppear {
+                            // Setting keyboard to focused if voice is not running
+                            if !UIAccessibility.isVoiceOverRunning {
+                                self.textfieldIsFocused = true
+                            }
+                        }
+                        .frame(minHeight: 80)
+                        .font(Font.academySans(size: 17, type: .skatRegular))
+                        .foregroundColor(styling.bodyTextColor)
+                        .background(styling.backgroundColor)
+                    Text(localization.privacyPolicyDisclamer)
+                        .font(Font.academySans(size: 11, type: .skatRegular))
+                        .foregroundColor(styling.secondaryColor)
+                        .accessibilityHidden(true)
+                        .dynamicTypeSize(.xxLarge)
+                    HStack {
+                        Button {
+                            self.textfieldIsFocused = false
+                            self.showSuccess = true
+                            self.submitFeedback(inputTextField)
+                        } label: {
+                            Text(localization.primaryButtonText)
+                                .frame(maxWidth: .infinity)
+                        }
+                        .disabled(disableSubmitButton)
+                        .font(Font.academySans(size: 17, type: .skatBold))
+                        .padding(.vertical, 14)
+                        .frame(maxWidth: .infinity)
+                        .background(styling.primaryButtonColor)
+                        .foregroundColor(.white)
+                        .cornerRadius(4)
+                        .opacity(disableSubmitButton ? 0.6 : 1.0)
+                        .multilineTextAlignment(.center)
                     }
                 }
-                .font(Font.academySans(size: 17, type: .skatRegular))
-                .foregroundColor(styling.bodyTextColor)
-                .background(styling.backgroundColor)
-            Text(localization.privacyPolicyDisclamer)
-                .font(Font.academySans(size: 11, type: .skatRegular))
-                .foregroundColor(styling.secondaryColor)
-                .accessibilityHidden(true)
-                .dynamicTypeSize(.xxLarge)
-            HStack {
-                Button {
-                    self.textfieldIsFocused = false
-                    self.showSuccess = true
-                    self.submitFeedback(inputTextField)
-                } label: {
-                    Text(localization.primaryButtonText)
-                        .frame(maxWidth: .infinity)
-                }
-                .disabled(disableSubmitButton)
-                .font(Font.academySans(size: 17, type: .skatBold))
-                .padding(.vertical, 14)
-                .frame(maxWidth: .infinity)
-                .background(styling.primaryButtonColor)
-                .foregroundColor(.white)
-                .cornerRadius(4)
-                .opacity(disableSubmitButton ? 0.6 : 1.0)
-                .multilineTextAlignment(.center)
+                .padding(24)
+                .frame(minHeight: proxy.size.height)
+
             }
         }
     }
@@ -272,3 +279,4 @@ struct ContentView_Previews: PreviewProvider {
         )
     }
 }
+
