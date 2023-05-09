@@ -150,6 +150,7 @@ private extension FeedbackView {
                     .cornerRadius(4)
                     .overlay { closeButton }
                     .padding(16)
+                    .accessibilityAddTraits(.isModal)
             }
         }
         .onChange(of: showFeedbackOverlay) { newValue in
@@ -206,12 +207,16 @@ private extension FeedbackView {
             TextEditor(text: $inputTextField)
                 .padding(.all, 10)
                 .focused($textfieldIsFocused)
+                .accessibilityHint(localization.privacyPolicyDisclamer)
                 .overlay(
                     RoundedRectangle(cornerRadius: 4)
                         .stroke(Color.gray, lineWidth: 1)
                 )
                 .onAppear {
-                    self.textfieldIsFocused = true
+                    // Setting keyboard to focused if voice is not running
+                    if !UIAccessibility.isVoiceOverRunning {
+                        self.textfieldIsFocused = true
+                    }
                 }
                 .font(Font.academySans(size: 17, type: .skatRegular))
                 .foregroundColor(styling.bodyTextColor)
@@ -219,6 +224,7 @@ private extension FeedbackView {
             Text(localization.privacyPolicyDisclamer)
                 .font(Font.academySans(size: 11, type: .skatRegular))
                 .foregroundColor(styling.secondaryColor)
+                .accessibilityHidden(true)
             HStack {
                 Button {
                     self.textfieldIsFocused = false
