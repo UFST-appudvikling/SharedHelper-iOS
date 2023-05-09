@@ -201,9 +201,11 @@ private extension FeedbackView {
                 .frame(maxWidth: .infinity)
                 .multilineTextAlignment(.center)
                 .padding(.top, 30)
+                .dynamicTypeSize(.xxxLarge)
             Text(localization.boxTitle)
                 .font(Font.academySans(size: 17, type: .skatRegular))
                 .foregroundColor(styling.secondaryColor)
+                .dynamicTypeSize(.xLarge)
             TextEditor(text: $inputTextField)
                 .padding(.all, 10)
                 .focused($textfieldIsFocused)
@@ -225,6 +227,7 @@ private extension FeedbackView {
                 .font(Font.academySans(size: 11, type: .skatRegular))
                 .foregroundColor(styling.secondaryColor)
                 .accessibilityHidden(true)
+                .dynamicTypeSize(.xxLarge)
             HStack {
                 Button {
                     self.textfieldIsFocused = false
@@ -248,14 +251,24 @@ private extension FeedbackView {
     }
 }
 
+private func makeLocalization() -> FeedbackLocalization {
+    FeedbackLocalization(
+        header: "Hvordan kan vi forbedre appen?",
+        boxTitle: "Skriv dine forbedringsidéer her",
+        privacyPolicyDisclamer: "Ingen personfølsomme oplysninger i denne boks. ",
+        primaryButtonText: "Indsend",
+        successMessage: "Tusind tak for din feedback!"
+    )
+}
+
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        FeedbackView(showFeedbackOverlay: .constant(true), submitFeedback: { _ in }, onCloseButtonTap: {}, localization: FeedbackLocalization(
-            header: "Hvordan kan vi forbedre appen?",
-            boxTitle: "Skriv dine forbedringsidéer her",
-            privacyPolicyDisclamer: "Ingen personfølsomme oplysninger i denne boks. ",
-            primaryButtonText: "Indsend",
-            successMessage: "Tusind tak for din feedback!"
-        ), styling: .init())
+        FeedbackView(
+            showFeedbackOverlay: .constant(true),
+            submitFeedback: { _ in },
+            onCloseButtonTap: {},
+            localization: makeLocalization(),
+            styling: .init()
+        )
     }
 }
