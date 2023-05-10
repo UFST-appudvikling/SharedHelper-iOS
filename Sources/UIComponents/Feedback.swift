@@ -195,18 +195,7 @@ private extension FeedbackView {
         GeometryReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text(localization.header)
-                        .font(Font.academySans(size: 28, type: .skatBold))
-                        .foregroundColor(styling.secondaryColor)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .frame(maxWidth: .infinity)
-                        .multilineTextAlignment(.center)
-                        .padding(.top, 30)
-                        .dynamicTypeSize(.xxxLarge)
-                    Text(localization.boxTitle)
-                        .font(Font.academySans(size: 17, type: .skatRegular))
-                        .foregroundColor(styling.secondaryColor)
-                        .dynamicTypeSize(.xLarge)
+                    topSection
                     TextEditor(text: $inputTextField)
                         .padding(.all, 10)
                         .focused($textfieldIsFocused)
@@ -225,35 +214,58 @@ private extension FeedbackView {
                         .font(Font.academySans(size: 17, type: .skatRegular))
                         .foregroundColor(styling.bodyTextColor)
                         .background(styling.backgroundColor)
-                    Text(localization.privacyPolicyDisclamer)
-                        .font(Font.academySans(size: 11, type: .skatRegular))
-                        .foregroundColor(styling.secondaryColor)
-                        .accessibilityHidden(true)
-                        .dynamicTypeSize(.xxLarge)
-                    HStack {
-                        Button {
-                            self.textfieldIsFocused = false
-                            self.showSuccess = true
-                            self.submitFeedback(inputTextField)
-                        } label: {
-                            Text(localization.primaryButtonText)
-                                .frame(maxWidth: .infinity)
-                        }
-                        .disabled(disableSubmitButton)
-                        .font(Font.academySans(size: 17, type: .skatBold))
-                        .padding(.vertical, 14)
-                        .frame(maxWidth: .infinity)
-                        .background(styling.primaryButtonColor)
-                        .foregroundColor(.white)
-                        .cornerRadius(4)
-                        .opacity(disableSubmitButton ? 0.6 : 1.0)
-                        .multilineTextAlignment(.center)
+                        bottomSection
                     }
                 }
                 .padding(24)
                 .frame(minHeight: proxy.size.height)
 
             }
+        
+    }
+}
+
+private extension FeedbackView {
+    @ViewBuilder
+    var topSection: some View {
+        Text(localization.header)
+            .font(Font.academySans(size: 28, type: .skatBold))
+            .foregroundColor(styling.secondaryColor)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity)
+            .multilineTextAlignment(.center)
+            .padding(.top, 30)
+            .dynamicTypeSize(.xxxLarge)
+        Text(localization.boxTitle)
+            .font(Font.academySans(size: 17, type: .skatRegular))
+            .foregroundColor(styling.secondaryColor)
+            .dynamicTypeSize(.xLarge)
+    }
+    @ViewBuilder
+    var bottomSection: some View {
+        Text(localization.privacyPolicyDisclamer)
+            .font(Font.academySans(size: 11, type: .skatRegular))
+            .foregroundColor(styling.secondaryColor)
+            .accessibilityHidden(true)
+            .dynamicTypeSize(.xxLarge)
+        HStack {
+            Button {
+                self.textfieldIsFocused = false
+                self.showSuccess = true
+                self.submitFeedback(inputTextField)
+            } label: {
+                Text(localization.primaryButtonText)
+                    .frame(maxWidth: .infinity)
+            }
+            .disabled(disableSubmitButton)
+            .font(Font.academySans(size: 17, type: .skatBold))
+            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity)
+            .background(styling.primaryButtonColor)
+            .foregroundColor(.white)
+            .cornerRadius(4)
+            .opacity(disableSubmitButton ? 0.6 : 1.0)
+            .multilineTextAlignment(.center)
         }
     }
 }
