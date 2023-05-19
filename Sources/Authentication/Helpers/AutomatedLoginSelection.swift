@@ -1,5 +1,5 @@
 //
-//  AutomatedLoginSelectionView.swift
+//  AutomatedLoginSelection.swift
 //  
 //
 //  Created by Nicolai Dam on 17/05/2023.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct AutomatedLoginSelectionView: View {
+public struct AutomatedLoginSelection: View {
     
     let callback: (Callback) -> Void
     let automatedUsers: [AuthenticationHandler.TokenConfiguration]
@@ -15,7 +15,7 @@ public struct AutomatedLoginSelectionView: View {
     @Environment(\.dismiss) private var dismiss
 
     public init(
-        callback: @escaping (AutomatedLoginSelectionView.Callback) -> Void,
+        callback: @escaping (AutomatedLoginSelection.Callback) -> Void,
         automatedUsers: [AuthenticationHandler.TokenConfiguration]
     ) {
         self.callback = callback
@@ -27,8 +27,8 @@ public struct AutomatedLoginSelectionView: View {
             List {
                 Section("Manual") {
                     Button {
-                        callback(.Manual)
                         dismiss()
+                        callback(.Manual)
                     } label: {
                         Text("Choose OAuth login")
                     }
@@ -44,8 +44,8 @@ public struct AutomatedLoginSelectionView: View {
                     }
                     Button {
                         guard let selectedUser = selectedUser else { fatalError() }
-                        callback(.Automated(selectedUser))
                         dismiss()
+                        callback(.Automated(selectedUser))
                     } label: {
                         Text("Choose automated login")
                     }
@@ -60,8 +60,8 @@ public struct AutomatedLoginSelectionView: View {
     }
 }
 
-extension AutomatedLoginSelectionView {
-    public enum Callback {
+extension AutomatedLoginSelection {
+    public enum Callback: Equatable {
         case Manual
         case Automated(AuthenticationHandler.TokenConfiguration)
     }
@@ -69,7 +69,7 @@ extension AutomatedLoginSelectionView {
 
 struct AutomatedLoginSelectionView_Previews: PreviewProvider {
     static var previews: some View {
-        AutomatedLoginSelectionView(callback: { _ in }, automatedUsers: [.mock])
+        AutomatedLoginSelection(callback: { _ in }, automatedUsers: [.mock])
     }
 }
 
