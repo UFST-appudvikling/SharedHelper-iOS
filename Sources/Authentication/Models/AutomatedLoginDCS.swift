@@ -38,7 +38,7 @@ public struct AutomatedLoginDCSUser: Codable, Equatable, Identifiable, Hashable 
             nonce: self.nonce,
             azure: AuthenticationHandler.Azure(),
             delegate: Delegate(),
-            authorizations: AuthenticationHandler.AuthorizationsModel(roles: []),
+            authorizations: AuthenticationHandler.AuthorizationsModel(roles: self.authorizations.roles),
             authenticatedUser: AuthenticationHandler.AuthenticatedUser(
                 skatQAALevel: self.dcs.authenticatedUser.skatQAALevel,
                 eIdentifier: self.dcs.authenticatedUser.eIdentifier,
