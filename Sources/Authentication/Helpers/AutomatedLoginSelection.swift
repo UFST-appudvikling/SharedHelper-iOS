@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// User selection view used for automated login
-/// - Example:
+/// - Example of a automated login button that uses this View in a sheet:
 /// ````
 ///struct AutomatedLoginButton: View {
 ///
@@ -37,10 +37,6 @@ import SwiftUI
 ///    }
 ///}
 /// ````
-/// - Returns: View
-/// - Parameter jsonFilePath: File path for json file, could for example be: Bundle.main.url(forResource: "automated_login_ejerskifte", withExtension: "json")!
-/// - Parameter filterUsers: Enum of type FilterUsers used to filter user (relevant if there is both azure and dcs users in the json file)
-/// - Parameter callback: Is triggered when there is picked a user
 public struct AutomatedLoginSelection: View {
     
     @State var users: [UserItem] = []
@@ -52,6 +48,10 @@ public struct AutomatedLoginSelection: View {
     @State var selectedUser: String = ""
     @State var error: String?
     
+    /// - Parameter jsonFilePath: File path for json file, could for example be: Bundle.main.url(forResource: "automated_login_ejerskifte", withExtension: "json")!, this json should be in the AutomatedLoginJSON type
+    /// - Parameter filterUsers: Enum of type FilterUsers used to filter user (relevant if there is both azure and dcs users in the json file)
+    /// - Parameter callback: Is triggered when there is picked a user
+    /// - Returns: View
     public init(
         jsonFilePath: URL,
         filterUsers: FilterUsers = .all,
