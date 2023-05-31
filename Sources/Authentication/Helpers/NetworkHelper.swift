@@ -38,7 +38,11 @@ extension AuthenticationHandler {
 
 extension AuthenticationHandler {
     func createAuthorizationURL() -> URL? {
-        guard let configuration = configuration, let accessTokenURL = URL(string: configuration.baseURL + configuration.authorizePath) else { return nil }
+        
+        guard case .live(let input) = loginType else { fatalError("This method is only used for live login, not automated") }
+        
+        let configuration = input.configuration
+        guard let accessTokenURL = URL(string: configuration.baseURL + configuration.authorizePath) else { return nil }
 
         let queryItems = [
           URLQueryItem(name: "client_id", value: configuration.clientID),
@@ -72,7 +76,11 @@ extension AuthenticationHandler {
         return URLRequest
     }
     func createBody(code: String? = nil, refreshToken: String? = nil) -> Data? {
-        guard let configuration = configuration, let accessTokenURL = URL(string: configuration.baseURL) else { return nil }
+        
+        guard case .live(let input) = loginType else { fatalError("This method is only used for live login, not automated") }
+        
+        let configuration = input.configuration
+        guard let accessTokenURL = URL(string: input.configuration.baseURL) else { fatalError() }
 
         var queryItems = [
           URLQueryItem(name: "code_verifier", value: configuration.codeVerifier),
