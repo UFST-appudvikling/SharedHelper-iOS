@@ -9,7 +9,7 @@ import Foundation
 
 /// NetworkingProtocol: This is where the method that executes the generic requests is located.
 public protocol NetworkingProtocol {
-    func sendRequest<Response: Codable>(request: URLRequest) async throws -> Response?
+    func sendRequest<Response: Codable>(request: URLRequest, sessionDelegate: URLSessionTaskDelegate?) async throws -> Response?
 }
 
 
@@ -26,9 +26,16 @@ public final class Networking: NetworkingProtocol {
 
 public extension NetworkingProtocol {
     @discardableResult
-    func sendRequest<Response: Codable>(request: URLRequest) async throws -> Response? {
+    func sendRequest<Response: Codable>(request: URLRequest, sessionDelegate: URLSessionTaskDelegate? = nil) async throws -> Response? {
+        let session: URLSession
+          if let delegate = sessionDelegate {
+              session = URLSession(configuration: .default, delegate: delegate, delegateQueue: nil)
+          } else {
+              session = URLSession.shared
+          }
+
         do {
-            let (data, response) = try await URLSession.shared.data(for: request, delegate: nil)
+            let (data, response) = try await session.data(for: request)
             guard let response = response as? HTTPURLResponse else {
                 throw NetworkingError.noResponse
             }
