@@ -9,6 +9,16 @@ import Foundation
 
 public struct AutomatedLoginDCSUser: Codable, Equatable, Identifiable, Hashable {
     
+    public init(title: String, apiKey: String, clientID: String, nonce: String, dcs: AutomatedLoginDCSUser.Dcs, authorizations: AutomatedLoginDCSUser.Authorizations) {
+        self.title = title
+        self.apiKey = apiKey
+        self.clientID = clientID
+        self.nonce = nonce
+        self.dcs = dcs
+        self.authorizations = authorizations
+    }
+    
+    
     public var id: String { title }
     
     let title: String
@@ -70,6 +80,11 @@ public struct AutomatedLoginDCSUser: Codable, Equatable, Identifiable, Hashable 
 
 public extension AutomatedLoginDCSUser {
     struct Dcs: Codable, Equatable, Hashable {
+        public init(authenticatedUser: AutomatedLoginDCSUser.AuthenticatedUser, delegator: AutomatedLoginDCSUser.Delegator) {
+            self.authenticatedUser = authenticatedUser
+            self.delegator = delegator
+        }
+        
         public let authenticatedUser: AuthenticatedUser
         public let delegator: Delegator
     }
@@ -100,6 +115,10 @@ public extension AutomatedLoginDCSUser {
     }
     
     struct Authorizations: Codable, Equatable, Hashable {
+        public init(roles: [String]) {
+            self.roles = roles
+        }
+        
         public let roles: [String]
     }
 }
