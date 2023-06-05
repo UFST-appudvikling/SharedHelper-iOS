@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "30BFE1C1-BEC8-4148-AE9B-5ED6C9F1DE90",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "AuthenticationTests",
+        "name" : "AuthenticationTests"
+      }
+    }
+  ],
+  "version" : 1
+}
