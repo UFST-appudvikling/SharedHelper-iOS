@@ -67,12 +67,7 @@ public extension AuthenticationHandler {
             self.callBackURL = callBackURL
             self.callbackURLScheme = callbackURLScheme
             self.scopes = scopes
-            self.codeVerifier = Configuration.generateCodeVerifier()
-            self.codeChallenge = Configuration.generateCodeChallenge(codeVerifier: self.codeVerifier)
         }
-        
-        let codeVerifier: String?
-        let codeChallenge: String?
         let baseURL: String
         let clientID: String
         let authorizePath: String
