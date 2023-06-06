@@ -214,64 +214,53 @@ final class AuthenticationHandlerTests: XCTestCase {
 
     /// Testing happy flow of loginByShowingSheet method
     /// We expect a token is returned
-//    func test_loginByShowingSheet_success() async throws {
-//        
-//        let returnedToken: AuthenticationHandler.TokenModel = .mockValidToken
-//        
-//        
-//        let initialState = makeInitialState(pkceClient: .empty, sheetIsActive: false)
-//        initialState.apiClient.getToken = { input in returnedToken }
-//        initialState.apiClient.getAuthorizationCode =  { input in return .success("code") }
-//        initialState.keychainClient.save = { identifier, value in true }
-//        initialState.keychainClient.remove = { _ in true }
-//        
-//        // Ensure the initial value of sheetIsActive is false
-//        XCTAssertFalse(initialState.sheetIsActive)
-//        
-//        // Create an expectation to wait for the asynchronous task to complete
-//        let expectation = XCTestExpectation(description: "loginByShowingSheetOnLive completed")
-//        
-//        Task {
-//            let token = try await initialState.loginByShowingSheetOnLive()
-//            XCTAssertEqual(token, returnedToken)
-//            XCTAssertTrue(initialState.sheetIsActive)
-//        }
-//        expectation.fulfill()
-//
-//        XCTAssertFalse(initialState.sheetIsActive)
-//    }
-//
-//    /// Testing error in the loginByShowingSheet method
-//    /// We expect an error is thrown
-//    func test_loginByShowingSheet_error() async throws {
-//
-//        let returnedError: AuthenticationHandler.CustomError = .decodingError
-//        var catchedError: AuthenticationHandler.CustomError?
-//                
-//        let initialState = makeInitialState(pkceClient: .empty, sheetIsActive: false)
-//        initialState.apiClient.getAuthorizationCode = { input in
-//            .failure(returnedError)
-//    }
-//        
-//        // Ensure the initial value of sheetIsActive is false
-//        XCTAssertFalse(initialState.sheetIsActive)
-//        
-//        // Create an expectation to wait for the asynchronous task to complete
-//        let expectation = XCTestExpectation(description: "loginByShowingSheetOnLive completed")
-//        
-//        Task {
-//            do {
-//                _ = try await initialState.loginByShowingSheetOnLive()
-//                XCTAssertTrue(initialState.sheetIsActive)
-//            } catch let error {
-//                catchedError = error as? AuthenticationHandler.CustomError
-//            }
-//            XCTAssertEqual(catchedError, returnedError)
-//        }
-//        expectation.fulfill()
-//
-//        XCTAssertFalse(initialState.sheetIsActive)
-//    }
+    func test_loginByShowingSheet_success() async throws {
+
+        let returnedToken: AuthenticationHandler.TokenModel = .mockValidToken
+
+
+        let initialState = makeInitialState(pkceClient: .empty, sheetIsActive: false)
+        initialState.apiClient.getToken = { input in returnedToken }
+        initialState.apiClient.getAuthorizationCode =  { input in return .success("code") }
+        initialState.keychainClient.save = { identifier, value in true }
+        initialState.keychainClient.remove = { _ in true }
+
+        XCTAssertFalse(initialState.sheetIsActive)
+
+        do {
+            let token = try await initialState.loginByShowingSheetOnLive()
+            XCTAssertEqual(token, returnedToken)
+        } catch {
+            XCTAssertThrowsError("")
+        }
+
+        XCTAssertFalse(initialState.sheetIsActive)
+    }
+
+    /// Testing error in the loginByShowingSheet method
+    /// We expect an error is thrown
+    func test_loginByShowingSheet_error() async throws {
+        
+        let returnedError: AuthenticationHandler.CustomError = .decodingError
+        var catchedError: AuthenticationHandler.CustomError?
+        
+        let initialState = makeInitialState(pkceClient: .empty, sheetIsActive: false)
+        initialState.apiClient.getAuthorizationCode = { input in
+                .failure(returnedError)
+        }
+        
+        XCTAssertFalse(initialState.sheetIsActive)
+        
+        do {
+            _ = try await initialState.loginByShowingSheetOnLive()
+            XCTAssertTrue(initialState.sheetIsActive)
+        } catch let error {
+            catchedError = error as? AuthenticationHandler.CustomError
+        }
+        
+        XCTAssertEqual(catchedError, returnedError)
+        XCTAssertFalse(initialState.sheetIsActive)
+    }
 
     /// Testing that an error is thrown if sheet is actve and the loginByShowingSheetOnLive func is invoked
     /// Note that loginByShowingSheetOnLive can be called from fetchToken
