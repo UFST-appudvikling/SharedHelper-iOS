@@ -13,34 +13,35 @@ public extension AuthenticationHandler {
         var expiresIn: Int
         var refreshExpiresIn: Int?
         var refreshToken: String
+        
         public var tokenType: String
         var idToken: String?
         public var sessionState: String?
         public var scope: String
-        var expiresAt: Date {
-            return Date().addingTimeInterval(TimeInterval(expiresIn))
-        }
-        var refreshExpiresAt: Date {
-            return Date().addingTimeInterval(TimeInterval(refreshExpiresIn ?? 0))
-        }
-        var wrap: String {
-            let seperator = TokenModel.keychainValueSeparator
-            return "\(accessToken)\(seperator)\(refreshToken)\(seperator)\(tokenType)\(seperator)\(expiresAt.timeIntervalSince1970)\(seperator)\(refreshExpiresAt.timeIntervalSince1970)"
-        }
         static let keychainValueSeparator: String = "\t"
         static let tokenSeparator: String = "&"
         
-        var accessTokenIsValid: Bool {
-            Date().second(to: expiresAt) > 1
+        func expiresAt(now: Date) -> Date {
+            return now.addingTimeInterval(TimeInterval(expiresIn))
         }
-        var refreshTokenIsValid: Bool {
-            Date().second(to: refreshExpiresAt) > 1
+        func refreshExpiresAt(now: Date) -> Date {
+            return now.addingTimeInterval(TimeInterval(refreshExpiresIn ?? 0))
+        }
+        func wrap(now: Date) -> String {
+            let seperator = TokenModel.keychainValueSeparator
+            return "\(accessToken)\(seperator)\(refreshToken)\(seperator)\(tokenType)\(seperator)\(expiresAt(now: now).timeIntervalSince1970)\(seperator)\(refreshExpiresAt(now: now).timeIntervalSince1970)"
+        }
+        func accessTokenIsValid(now: Date) -> Bool {
+            now.second(to: expiresAt(now: now)) > 1
+        }
+        func refreshTokenIsValid(now: Date) -> Bool {
+            now.second(to: refreshExpiresAt(now: now)) > 1
         }
     }
 }
 internal extension AuthenticationHandler {
-    // MARK: - Static Functions
-    static func unwrap(wrappedToken: String) -> TokenModel? {
+    // MARK: - Functions
+    func unwrap(wrappedToken: String, now: Date) -> TokenModel? {
         let tokenComponents = wrappedToken.components(separatedBy: TokenModel.keychainValueSeparator)
         var accessToken: String?
         var refreshToken: String?
@@ -48,15 +49,12 @@ internal extension AuthenticationHandler {
         var refreshExpirationDate: Date?
         var type: String?
         
-        if tokenComponents.count > 4 {
-            accessToken = tokenComponents[0]
-            refreshToken = tokenComponents[1]
-            type = tokenComponents[2]
-            expirationDate = Date(timeIntervalSince1970: TimeInterval(Double(tokenComponents[3]) ?? 0.0))
-            refreshExpirationDate = Date(timeIntervalSince1970: TimeInterval(Double(tokenComponents[4]) ?? 0.0))
-        }
+        accessToken = tokenComponents[0]
+        refreshToken = tokenComponents[1]
+        type = tokenComponents[2]
+        expirationDate = Date(timeIntervalSince1970: TimeInterval(Double(tokenComponents[3]) ?? 0.0))
+        refreshExpirationDate = Date(timeIntervalSince1970: TimeInterval(Double(tokenComponents[4]) ?? 0.0))
         
-    
         guard
             let accToken = accessToken,
             let refrToken = refreshToken,
@@ -65,15 +63,16 @@ internal extension AuthenticationHandler {
             let tokenType = type,
             let expiresIn = Calendar.current.dateComponents(
                 [.second],
-                from: Date(),
+                from: now,
                 to: expiresDate).second,
             let refreshExpiresIn = Calendar.current.dateComponents(
                 [.second],
-                from: Date(),
+                from: now,
                 to: refreshExpiresDate).second
         else {
             return nil
         }
+        
         return TokenModel(accessToken: accToken, expiresIn: expiresIn, refreshExpiresIn: refreshExpiresIn, refreshToken: refrToken, tokenType: tokenType, scope: "")
     }
 }
@@ -92,5 +91,20 @@ extension AuthenticationHandler {
         case keychain
         case refresh
         case automatedLogin
+    }
+}
+
+extension AuthenticationHandler.TokenModel: Equatable {
+    
+    public static func == (lhs: AuthenticationHandler.TokenModel, rhs: AuthenticationHandler.TokenModel) -> Bool {
+        if lhs.accessToken == rhs.accessToken
+            && lhs.refreshToken == rhs.refreshToken
+            && lhs.tokenType == rhs.tokenType
+            && lhs.expiresIn == rhs.expiresIn
+            && lhs.refreshExpiresIn == rhs.refreshExpiresIn
+        {
+            return true
+        }
+        return false
     }
 }

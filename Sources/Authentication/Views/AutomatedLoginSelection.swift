@@ -8,35 +8,6 @@
 import SwiftUI
 
 /// User selection view used for automated login
-/// - Example of a automated login button that uses this View in a sheet:
-/// ````
-///struct AutomatedLoginButton: View {
-///
-///    @State var showAutomatedLogin = false
-///    let jsonFileURL: URL
-///    let filterUsers: AutomatedLoginSelection.FilterUsers
-///    let onCallback: (AutomatedLoginSelection.Callback) -> Void
-///
-///    var body: some View {
-///        Button("Automated Login") {
-///            showAutomatedLogin = true
-///        }
-///        .padding()
-///        .sheet(
-///            isPresented: $showAutomatedLogin,
-///            content: {
-///                AutomatedLoginSelection(
-///                    jsonFilePath: jsonFileURL,
-///                    filterUsers: filterUsers
-///                ) {
-///                    onCallback($0)
-///                    self.showAutomatedLogin = false
-///                }
-///            }
-///        )
-///    }
-///}
-/// ````
 public struct AutomatedLoginSelection: View {
     
     @State var users: [UserItem] = []
@@ -181,7 +152,7 @@ public extension AutomatedLoginSelection {
     
     enum Callback: Equatable {
         case Manual
-        case Automated(UserItem,String)
+        case Automated(UserItem, String)
     }
     
     enum FilterUsers {
