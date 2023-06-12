@@ -23,3 +23,28 @@ public enum NetworkingRequestableMethod: String {
     case post = "POST"
     case put = "PUT"
 }
+
+
+public extension Networking {
+    static func makeURLRequest(request: NetworkingRequestable) throws -> URLRequest {
+       
+        guard let url = URL(string: request.baseURL + request.path) else {
+            throw NetworkingError.invalidURL
+        }
+        
+        var URLRequest = URLRequest(url: url)
+        URLRequest.httpMethod = request.method.rawValue
+        URLRequest.allHTTPHeaderFields = request.header
+        
+        print("Send request with url: == \(String(describing: URLRequest.url))")
+        print("Send request with httpMethod: == \(String(describing: URLRequest.httpMethod))")
+        print("Send request with headers: == \(String(describing: URLRequest.allHTTPHeaderFields))")
+        
+        if let body = request.body {
+            print("Send request with body == \(String(data: body, encoding: .utf8)!)")
+            URLRequest.httpBody = body
+        }
+        return URLRequest
+    }
+}
+

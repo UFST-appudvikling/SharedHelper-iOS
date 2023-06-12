@@ -17,6 +17,7 @@ public extension AuthenticationHandler {
         case dissmissLogin(error: String)
         case unexpectedStatusCode(_ code: Int)
         case internalError(_ msg: String)
+        case noAutomatedLoginSupport
         public var message: String {
             switch self {
             case .decodingError:
@@ -35,6 +36,8 @@ public extension AuthenticationHandler {
                 return "Dissmiss Login \(error)"
             case .invalidConfiguration:
                 return "Invalid Configuration"
+            case .noAutomatedLoginSupport:
+                return "This func can only be used for live login, not supported for automated"
             }
         }
     }

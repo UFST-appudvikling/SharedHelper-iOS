@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Nicolai Dam on 13/02/2023.
 //
@@ -145,11 +145,11 @@ private extension FeedbackView {
                     }
             } else {
                 feedbackView
-                    .padding(24)
                     .background(Color.white)
                     .cornerRadius(4)
                     .overlay { closeButton }
                     .padding(16)
+                    .accessibilityAddTraits(.isModal)
             }
         }
         .onChange(of: showFeedbackOverlay) { newValue in
@@ -192,64 +192,103 @@ private extension FeedbackView {
     }
     
     var feedbackView: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(localization.header)
-                .font(Font.academySans(size: 28, type: .skatBold))
-                .foregroundColor(styling.secondaryColor)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity)
-                .multilineTextAlignment(.center)
-                .padding(.top, 30)
-            Text(localization.boxTitle)
-                .font(Font.academySans(size: 17, type: .skatRegular))
-                .foregroundColor(styling.secondaryColor)
-            TextEditor(text: $inputTextField)
-                .padding(.all, 10)
-                .focused($textfieldIsFocused)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 4)
-                        .stroke(Color.gray, lineWidth: 1)
-                )
-                .onAppear {
-                    self.textfieldIsFocused = true
+        GeometryReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    topSection
+                    TextEditor(text: $inputTextField)
+                        .padding(.all, 10)
+                        .focused($textfieldIsFocused)
+                        .accessibilityHint(localization.privacyPolicyDisclamer)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(Color.gray, lineWidth: 1)
+                        )
+                        .onAppear {
+                            // Setting keyboard to focused if voice is not running
+                            if !UIAccessibility.isVoiceOverRunning {
+                                self.textfieldIsFocused = true
+                            }
+                        }
+                        .frame(minHeight: 80)
+                        .font(Font.academySans(size: 17, type: .skatRegular))
+                        .foregroundColor(styling.bodyTextColor)
+                        .background(styling.backgroundColor)
+                        bottomSection
+                    }
                 }
-                .font(Font.academySans(size: 17, type: .skatRegular))
-                .foregroundColor(styling.bodyTextColor)
-                .background(styling.backgroundColor)
-            Text(localization.privacyPolicyDisclamer)
-                .font(Font.academySans(size: 11, type: .skatRegular))
-                .foregroundColor(styling.secondaryColor)
-            HStack {
-                Button {
-                    self.textfieldIsFocused = false
-                    self.showSuccess = true
-                    self.submitFeedback(inputTextField)
-                } label: {
-                    Text(localization.primaryButtonText)
-                        .frame(maxWidth: .infinity)
-                }
-                .disabled(disableSubmitButton)
-                .font(Font.academySans(size: 17, type: .skatBold))
-                .padding(.vertical, 14)
-                .frame(maxWidth: .infinity)
-                .background(styling.primaryButtonColor)
-                .foregroundColor(.white)
-                .cornerRadius(4)
-                .opacity(disableSubmitButton ? 0.6 : 1.0)
-                .multilineTextAlignment(.center)
+                .padding(24)
+                .frame(minHeight: proxy.size.height)
+
             }
+        
+    }
+}
+
+private extension FeedbackView {
+    @ViewBuilder
+    var topSection: some View {
+        Text(localization.header)
+            .font(Font.academySans(size: 28, type: .skatBold))
+            .foregroundColor(styling.secondaryColor)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity)
+            .multilineTextAlignment(.center)
+            .padding(.top, 30)
+            .dynamicTypeSize(.xxxLarge)
+        Text(localization.boxTitle)
+            .font(Font.academySans(size: 17, type: .skatRegular))
+            .foregroundColor(styling.secondaryColor)
+            .dynamicTypeSize(.xLarge)
+    }
+    @ViewBuilder
+    var bottomSection: some View {
+        Text(localization.privacyPolicyDisclamer)
+            .font(Font.academySans(size: 11, type: .skatRegular))
+            .foregroundColor(styling.secondaryColor)
+            .accessibilityHidden(true)
+            .dynamicTypeSize(.xxLarge)
+        HStack {
+            Button {
+                self.textfieldIsFocused = false
+                self.showSuccess = true
+                self.submitFeedback(inputTextField)
+            } label: {
+                Text(localization.primaryButtonText)
+                    .frame(maxWidth: .infinity)
+            }
+            .disabled(disableSubmitButton)
+            .font(Font.academySans(size: 17, type: .skatBold))
+            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity)
+            .background(styling.primaryButtonColor)
+            .foregroundColor(.white)
+            .cornerRadius(4)
+            .opacity(disableSubmitButton ? 0.6 : 1.0)
+            .multilineTextAlignment(.center)
         }
     }
 }
 
+private func makeLocalization() -> FeedbackLocalization {
+    FeedbackLocalization(
+        header: "Hvordan kan vi forbedre appen?",
+        boxTitle: "Skriv dine forbedringsidéer her",
+        privacyPolicyDisclamer: "Ingen personfølsomme oplysninger i denne boks. ",
+        primaryButtonText: "Indsend",
+        successMessage: "Tusind tak for din feedback!"
+    )
+}
+
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        FeedbackView(showFeedbackOverlay: .constant(true), submitFeedback: { _ in }, onCloseButtonTap: {}, localization: FeedbackLocalization(
-            header: "Hvordan kan vi forbedre appen?",
-            boxTitle: "Skriv dine forbedringsidéer her",
-            privacyPolicyDisclamer: "Ingen personfølsomme oplysninger i denne boks. ",
-            primaryButtonText: "Indsend",
-            successMessage: "Tusind tak for din feedback!"
-        ), styling: .init())
+        FeedbackView(
+            showFeedbackOverlay: .constant(true),
+            submitFeedback: { _ in },
+            onCloseButtonTap: {},
+            localization: makeLocalization(),
+            styling: .init()
+        )
     }
 }
+

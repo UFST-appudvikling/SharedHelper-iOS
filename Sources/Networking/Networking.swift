@@ -10,6 +10,7 @@ import Foundation
 /// NetworkingProtocol: This is where the method that executes the generic requests is located.
 public protocol NetworkingProtocol {
     func sendRequest<Response: Codable>(request: URLRequest, sessionDelegate: URLSessionTaskDelegate?) async throws -> Response?
+    func uploadMultipartFile<Response: Codable>(multipartForm: Networking.MultipartFormData, url: URL) async throws -> Response?
 }
 
 
@@ -67,28 +68,14 @@ public extension NetworkingProtocol {
                 throw error
             }
         }
+        
     }
-}
-
-public extension Networking {
-    static func makeURLRequest(request: NetworkingRequestable) throws -> URLRequest {
-       
-        guard let url = URL(string: request.baseURL + request.path) else {
-            throw NetworkingError.invalidURL
+    func uploadMultipartFile<Response: Codable>(multipartForm: Networking.MultipartFormData, url: URL) async throws -> Response? {
+        let request = URLRequest(url: url, multipartFormData: multipartForm)
+        if let response: Response = try await sendRequest(request: request) {
+            return response
+        } else {
+            return nil
         }
-        
-        var URLRequest = URLRequest(url: url)
-        URLRequest.httpMethod = request.method.rawValue
-        URLRequest.allHTTPHeaderFields = request.header
-        
-        print("Send request with url: == \(String(describing: URLRequest.url))")
-        print("Send request with httpMethod: == \(String(describing: URLRequest.httpMethod))")
-        print("Send request with headers: == \(String(describing: URLRequest.allHTTPHeaderFields))")
-        
-        if let body = request.body {
-            print("Send request with body == \(String(data: body, encoding: .utf8)!)")
-            URLRequest.httpBody = body
-        }
-        return URLRequest
     }
 }
