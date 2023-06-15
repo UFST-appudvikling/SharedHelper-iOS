@@ -13,14 +13,12 @@ import Foundation
 ///   - url: url + path to hit
 ///   - parameters: url query params
 ///   - headers: extra heades
-///   - appVersion: App version, for example 1.2.4
 /// - Returns: Request
 
 public func makeGetRequest(
     url: URL,
     parameters: [String: Any] = [:],
-    headers: [String: String] = [:],
-    appVersion: String? = nil
+    headers: [String: String] = [:]
 ) -> URLRequest {
     var request: URLRequest
     if parameters.isEmpty {
@@ -35,7 +33,7 @@ public func makeGetRequest(
         let escapedPlusChar = comps.url!.absoluteString.replacingOccurrences(of: "+", with: "%2B")
         request = .init(url: URL(string: escapedPlusChar)!)
     }
-    var requestWithDefaultHeaders = request.applyDefaultHeaders(appVersion)
+    var requestWithDefaultHeaders = request.applyDefaultHeaders()
     requestWithDefaultHeaders.setValue("application/json", forHTTPHeaderField: "Content-Type")
     if !headers.isEmpty {
         var headerFields = requestWithDefaultHeaders.allHTTPHeaderFields ?? [:]
@@ -52,7 +50,6 @@ public func makeGetRequest(
 ///   - requestBody: the body to be encoded to json
 ///   - encoder: supply custom encoder if needed
 ///   - headers: extra heades
-///   - appVersion: App version, for example 1.2.4
 /// - Returns: Request
 public func makePostRequest<Input: Encodable>(
     url: URL,
@@ -62,10 +59,9 @@ public func makePostRequest<Input: Encodable>(
         encoder.dateEncodingStrategy = .iso8601
         return encoder
     }(),
-    headers: [String: String] = [:],
-    appVersion: String? = nil
+    headers: [String: String] = [:]
 ) -> URLRequest {
-    var request = URLRequest(url: url).applyDefaultHeaders(appVersion)
+    var request = URLRequest(url: url).applyDefaultHeaders()
     request.httpMethod = "POST"
     request.httpBody = try! encoder.encode(requestBody)
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -84,7 +80,6 @@ public func makePostRequest<Input: Encodable>(
 ///   - requestBody: the body to be encoded to json
 ///   - encoder: supply custom encoder if needed
 ///   - headers: extra heades
-///   - appVersion: App version, for example 1.2.4
 /// - Returns: Request
 public func makeDeleteRequest<Input: Encodable>(
     url: URL,
@@ -94,10 +89,9 @@ public func makeDeleteRequest<Input: Encodable>(
         encoder.dateEncodingStrategy = .iso8601
         return encoder
     }(),
-    headers: [String: String] = [:],
-    appVersion: String? = nil
+    headers: [String: String] = [:]
 ) -> URLRequest {
-    var request = URLRequest(url: url).applyDefaultHeaders(appVersion)
+    var request = URLRequest(url: url).applyDefaultHeaders()
     request.httpMethod = "DELETE"
     request.httpBody = try! encoder.encode(requestBody)
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -116,7 +110,6 @@ public func makeDeleteRequest<Input: Encodable>(
 ///   - requestBody: the body to be encoded to json
 ///   - encoder: supply custom encoder if needed
 ///   - headers: extra heades
-///   - appVersion: App version, for example 1.2.4
 /// - Returns: Request
 public func makePutRequest<Input: Encodable>(
     url: URL,
@@ -126,10 +119,9 @@ public func makePutRequest<Input: Encodable>(
         encoder.dateEncodingStrategy = .iso8601
         return encoder
     }(),
-    headers: [String: String] = [:],
-    appVersion: String? = nil
+    headers: [String: String] = [:]
 ) -> URLRequest {
-    var request = URLRequest(url: url).applyDefaultHeaders(appVersion)
+    var request = URLRequest(url: url).applyDefaultHeaders()
     request.httpMethod = "PUT"
     request.httpBody = try! encoder.encode(requestBody)
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -142,15 +134,19 @@ public func makePutRequest<Input: Encodable>(
 }
 
 private extension URLRequest {
-    func applyDefaultHeaders(_ appVersion: String?) -> URLRequest {
+    func applyDefaultHeaders() -> URLRequest {
         var copy = self
         var headers = self.allHTTPHeaderFields ?? [:]
         headers["x-request-id"] = UUID().uuidString
         headers["x-platform"] = "iOS"
-        if let appVersion {
-            headers["x-version"] = appVersion
-        }
+        headers["x-version"] = Bundle.main.versionNumber
         copy.allHTTPHeaderFields = headers
         return copy
+    }
+}
+
+public extension Bundle {
+    var versionNumber: String {
+        return infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
     }
 }
