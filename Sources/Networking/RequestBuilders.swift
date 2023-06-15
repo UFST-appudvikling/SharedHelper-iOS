@@ -8,7 +8,7 @@
 import Foundation
 
 /// Request for getting
-/// Per default a uiid and platform is in the header and if appVersion is there it will also be in the header
+/// Per default a request id, app version platform is in the header for better logging on the backend
 /// - Parameters:
 ///   - url: url + path to hit
 ///   - parameters: url query params
@@ -44,7 +44,7 @@ public func makeGetRequest(
 }
 
 /// Request for posting
-/// Per default a uiid and platform is in the header and if appVersion is there it will also be in the header
+/// Per default a request id, app version platform is in the header for better logging on the backend
 /// - Parameters:
 ///   - url: url + path to hit
 ///   - requestBody: the body to be encoded to json
@@ -74,7 +74,7 @@ public func makePostRequest<Input: Encodable>(
 }
 
 /// Request for deleting
-/// Per default a uiid and platform is in the header and if appVersion is there it will also be in the header
+/// Per default a request id, app version platform is in the header for better logging on the backend
 /// - Parameters:
 ///   - url: url + path to hit
 ///   - requestBody: the body to be encoded to json
@@ -104,7 +104,7 @@ public func makeDeleteRequest<Input: Encodable>(
 }
 
 /// Request for updating
-/// Per default a uiid and platform is in the header and if appVersion is there it will also be in the header
+/// Per default a request id, app version platform is in the header for better logging on the backend
 /// - Parameters:
 ///   - url: url + path to hit
 ///   - requestBody: the body to be encoded to json
