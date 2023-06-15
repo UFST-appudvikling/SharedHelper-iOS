@@ -32,18 +32,14 @@ public func makeGetRequest(
         let escapedPlusChar = comps.url!.absoluteString.replacingOccurrences(of: "+", with: "%2B")
         request = .init(url: URL(string: escapedPlusChar)!)
     }
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.setValue(UUID().uuidString, forHTTPHeaderField: "x-request-id")
-    request.setValue("iOS", forHTTPHeaderField: "x-platform")
-    if let appVersion {
-        request.setValue(appVersion, forHTTPHeaderField: "x-version")
-    }
+    var requestWithDefaultHeaders = request.applyDefaultHeaders(appVersion)
+    requestWithDefaultHeaders.setValue("application/json", forHTTPHeaderField: "Content-Type")
     if !headers.isEmpty {
-        var headerFields = request.allHTTPHeaderFields ?? [:]
+        var headerFields = requestWithDefaultHeaders.allHTTPHeaderFields ?? [:]
         headerFields.merge(headers, uniquingKeysWith: { $1 })
-        request.allHTTPHeaderFields = headerFields
+        requestWithDefaultHeaders.allHTTPHeaderFields = headerFields
     }
-    return request
+    return requestWithDefaultHeaders
 }
 
 /// Request for posting
@@ -63,15 +59,10 @@ public func makePostRequest<Input: Encodable>(
     headers: [String: String] = [:],
     appVersion: String? = nil
 ) -> URLRequest {
-    var request = URLRequest(url: url)
+    var request = URLRequest(url: url).applyDefaultHeaders(appVersion)
     request.httpMethod = "POST"
     request.httpBody = try! encoder.encode(requestBody)
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.setValue(UUID().uuidString, forHTTPHeaderField: "x-request-id")
-    request.setValue("iOS", forHTTPHeaderField: "x-platform")
-    if let appVersion {
-        request.setValue(appVersion, forHTTPHeaderField: "x-version")
-    }
     if !headers.isEmpty {
         var headerFields = request.allHTTPHeaderFields ?? [:]
         headerFields.merge(headers, uniquingKeysWith: { $1 })
@@ -97,15 +88,10 @@ public func makeDeleteRequest<Input: Encodable>(
     headers: [String: String] = [:],
     appVersion: String? = nil
 ) -> URLRequest {
-    var request = URLRequest(url: url)
+    var request = URLRequest(url: url).applyDefaultHeaders(appVersion)
     request.httpMethod = "DELETE"
     request.httpBody = try! encoder.encode(requestBody)
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.setValue(UUID().uuidString, forHTTPHeaderField: "x-request-id")
-    request.setValue("iOS", forHTTPHeaderField: "x-platform")
-    if let appVersion {
-        request.setValue(appVersion, forHTTPHeaderField: "x-version")
-    }
     if !headers.isEmpty {
         var headerFields = request.allHTTPHeaderFields ?? [:]
         headerFields.merge(headers, uniquingKeysWith: { $1 })
@@ -131,16 +117,28 @@ public func makePutRequest<Input: Encodable>(
     headers: [String: String] = [:],
     appVersion: String? = nil
 ) -> URLRequest {
-    var request = URLRequest(url: url)
+    var request = URLRequest(url: url).applyDefaultHeaders(appVersion)
     request.httpMethod = "PUT"
     request.httpBody = try! encoder.encode(requestBody)
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.setValue(UUID().uuidString, forHTTPHeaderField: "x-request-id")
-    request.setValue("iOS", forHTTPHeaderField: "x-platform")
     if !headers.isEmpty {
         var headerFields = request.allHTTPHeaderFields ?? [:]
         headerFields.merge(headers, uniquingKeysWith: { $1 })
         request.allHTTPHeaderFields = headerFields
     }
     return request
+}
+
+private extension URLRequest {
+    func applyDefaultHeaders(_ appVersion: String?) -> URLRequest {
+        var copy = self
+        var headers = self.allHTTPHeaderFields ?? [:]
+        headers["x-request-id"] = UUID().uuidString
+        headers["x-platform"] = "iOS"
+        if let appVersion {
+            headers["x-version"] = appVersion
+        }
+        copy.allHTTPHeaderFields = headers
+        return copy
+    }
 }
