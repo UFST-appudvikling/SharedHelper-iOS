@@ -1,11 +1,41 @@
 import XCTest
 @testable import Networking
 
-final class NetworkingTests: XCTestCase {
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-//        XCTAssertEqual(Networking().text, "Hello, World!")
+class NetworkingTests: XCTestCase {
+
+    func testMakeGetNoParams() throws {
+        let req = makeGetRequest(url: URL.init(string: "https://test.dk")!)
+        XCTAssertEqual(req.url, URL.init(string: "https://test.dk"))
+    }
+
+    func testMakeGetWithParams() throws {
+        let params: [String: Any] = [
+            "int": 1,
+            "double": 1.0
+        ]
+
+        let authHeader: [String: String] = ["Authorization": "Some token" ]
+
+        let req = makeGetRequest(url: URL.init(string: "https://test.dk")!, parameters: params, headers: authHeader)
+        XCTAssertEqual(req.url?.host, "test.dk")
+        XCTAssertEqual(req.httpMethod, "GET")
+        XCTAssertTrue(req.url!.query!.contains("int=1"))
+        XCTAssertTrue(req.url!.query!.contains("double=1.0"))
+        XCTAssertTrue(req.value(forHTTPHeaderField: authHeader.keys.first!)!.contains(authHeader.values.first!))
+    }
+
+    func testMakePost() throws {
+        struct Vehicle: Encodable {
+            var id: Int
+            var name: String
+        }
+        let encoder = JSONEncoder()
+        let mercedes = Vehicle(id: 1, name: "Mercedes 220d")
+        let resultBody = try encoder.encode(mercedes)
+        let authHeader: [String: String] = ["Authorization": "Some token" ]
+        let req = makePostRequest(url: URL.init(string: "https://test.dk")!, requestBody: mercedes, encoder: encoder, headers: authHeader)
+        XCTAssertEqual(req.httpBody, resultBody)
+        XCTAssertEqual(req.httpMethod, "POST")
+        XCTAssertTrue(req.value(forHTTPHeaderField: authHeader.keys.first!)!.contains(authHeader.values.first!))
     }
 }
