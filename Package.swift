@@ -42,13 +42,13 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Networking",
-            dependencies: []),
+            dependencies: [.product(name: "FirebaseCrashlytics", package: "firebase-ios-sdk")]),
         .testTarget(
             name: "NetworkingTests",
             dependencies: ["Networking"]),
         .target(
             name: "Authentication",
-            dependencies: ["SecurityHandler"]),
+            dependencies: ["SecurityHandler", "Networking",]),
         .target(
             name: "SecurityHandler",
             dependencies: [],

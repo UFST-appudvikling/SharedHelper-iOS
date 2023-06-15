@@ -8,6 +8,7 @@
 import AuthenticationServices
 import Foundation
 import SecurityHandler
+import Networking
 
 /// Interface
 struct APIClient {
@@ -46,38 +47,31 @@ extension APIClient {
             }
         },
         getTokenAutomatic: { automatedLoginModel in
-            do {
-                var jsonBody: Data?
-                
-                switch automatedLoginModel.user {
-                case .azure(let azureUser):
-                    jsonBody = azureUser.asJsonData
-                case .dcs(let dcsUser):
-                    jsonBody = dcsUser.asJsonData
-                }
-                
-                let request = try createTokenRequest(
-                    urlString: automatedLoginModel.url,
-                    method: "POST",
-                    header: ["Content-Type": "application/json"],
-                    body: jsonBody
-                )
-                if let response: AuthenticationHandler.TokenModel = try await sendRequest(request: request) {
-                    return response
-                } else {
-                    throw AuthenticationHandler.CustomError.invalidData
-                }
-            } catch let error {
-                dump(error)
-                throw error
+            
+            let body: AuthenticationHandler.AutomatedLoginRequestBody
+            
+            switch automatedLoginModel.user {
+            case .azure(let azureUser):
+                body = azureUser.asJsonData
+            case .dcs(let dcsUser):
+                body = dcsUser.asJsonData
+            }
+            
+            let request = makePostRequest(url: URL(string: automatedLoginModel.url)!, requestBody: body)
+            
+            if let response: AuthenticationHandler.TokenModel = try await sendRequest(request: request) {
+                return response
+            } else {
+                throw AuthenticationHandler.CustomError.invalidData
             }
         },
         getUserInfo: { token, configuration in
-            let request = try createUserRequest(
-                urlString: configuration.baseURL + configuration.userInfoPath,
-                method: "GET",
-                header: ["Authorization": "Bearer \(token.accessToken)"]
-            )
+            
+            guard let url = URL(string: configuration.baseURL + configuration.userInfoPath) else {
+                throw URLError(.badURL)
+            }
+            
+            let request = makeGetRequest(url: url, headers: ["Authorization": "Bearer \(token.accessToken)"])
             
             if let response: AuthenticationHandler.UserModel = try await sendRequest(request: request) {
                 return response
