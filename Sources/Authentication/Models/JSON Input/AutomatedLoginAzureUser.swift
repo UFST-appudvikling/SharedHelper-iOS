@@ -19,16 +19,6 @@ public struct AutomatedLoginAzureUser: Codable, Equatable, Identifiable, Hashabl
     let azure: Azure
     let authorizations: Authorizations
     
-    enum CodingKeys: String, CodingKey {
-        case title
-        case apiKey = "api-key"
-        case clientID = "client_id"
-        case azureOrDcs
-        case nonce
-        case azure
-        case authorizations
-    }
-    
     var asRequestBody: AuthenticationHandler.AutomatedLoginRequestBody {
         let body = AuthenticationHandler.AutomatedLoginRequestBody(
             apiKey: self.apiKey,
@@ -55,6 +45,16 @@ public struct AutomatedLoginAzureUser: Codable, Equatable, Identifiable, Hashabl
         self.nonce = nonce
         self.azure = azure
         self.authorizations = authorizations
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case title
+        case apiKey = "api-key"
+        case clientID = "client_id"
+        case azureOrDcs
+        case nonce
+        case azure
+        case authorizations
     }
 }
 
