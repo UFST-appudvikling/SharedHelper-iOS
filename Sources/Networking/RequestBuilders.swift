@@ -7,10 +7,13 @@
 
 import Foundation
 
-/// Request builder
+/// Request for getting
+/// Per default a uiid and platform is in the header and if appVersion this parameter is also set in the header
 /// - Parameters:
 ///   - url: url + path to hit
 ///   - parameters: url query params
+///   - headers: extra heades
+///   - appVersion: App version, for example 1.2.4
 /// - Returns: Request
 
 public func makeGetRequest(
@@ -43,10 +46,13 @@ public func makeGetRequest(
 }
 
 /// Request for posting
+/// Per default a uiid and platform is in the header and if appVersion this parameter is also set in the header
 /// - Parameters:
 ///   - url: url + path to hit
 ///   - requestBody: the body to be encoded to json
 ///   - encoder: supply custom encoder if needed
+///   - headers: extra heades
+///   - appVersion: App version, for example 1.2.4
 /// - Returns: Request
 public func makePostRequest<Input: Encodable>(
     url: URL,
@@ -72,10 +78,13 @@ public func makePostRequest<Input: Encodable>(
 }
 
 /// Request for deleting
+/// Per default a uiid and platform is in the header and if appVersion this parameter is also set in the header
 /// - Parameters:
 ///   - url: url + path to hit
 ///   - requestBody: the body to be encoded to json
 ///   - encoder: supply custom encoder if needed
+///   - headers: extra heades
+///   - appVersion: App version, for example 1.2.4
 /// - Returns: Request
 public func makeDeleteRequest<Input: Encodable>(
     url: URL,
@@ -101,10 +110,13 @@ public func makeDeleteRequest<Input: Encodable>(
 }
 
 /// Request for updating
+/// Per default a uiid and platform is in the header and if appVersion this parameter is also set in the header
 /// - Parameters:
 ///   - url: url + path to hit
 ///   - requestBody: the body to be encoded to json
 ///   - encoder: supply custom encoder if needed
+///   - headers: extra heades
+///   - appVersion: App version, for example 1.2.4
 /// - Returns: Request
 public func makePutRequest<Input: Encodable>(
     url: URL,
