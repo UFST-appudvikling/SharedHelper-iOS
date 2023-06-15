@@ -145,7 +145,7 @@ private extension URLRequest {
     }
 }
 
-public extension Bundle {
+private extension Bundle {
     var versionNumber: String {
         return infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
     }
