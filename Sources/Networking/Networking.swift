@@ -54,7 +54,11 @@ public extension NetworkingProtocol {
                 }
             case 401:
                 throw NetworkingError.unauthorized(response.statusCode)
-            case 402...499:
+            case 402:
+                throw NetworkingError.clientEntityError(data: data, code: response.statusCode)
+            case 403:
+                throw NetworkingError.forbidden
+            case 404...499:
                 throw NetworkingError.clientEntityError(data: data, code: response.statusCode)
             case 500...599:
                 throw NetworkingError.backendError(response.statusCode)
