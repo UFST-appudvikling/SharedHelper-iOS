@@ -29,8 +29,7 @@ public struct AutomatedLoginAzureUser: Codable, Equatable, Identifiable, Hashabl
         case authorizations
     }
     
-    var asJsonData: Data? {
-        let encoder = JSONEncoder()
+    var asRequestBody: AuthenticationHandler.AutomatedLoginRequestBody {
         let body = AuthenticationHandler.AutomatedLoginRequestBody(
             apiKey: self.apiKey,
             clientID: self.clientID,
@@ -39,8 +38,7 @@ public struct AutomatedLoginAzureUser: Codable, Equatable, Identifiable, Hashabl
             azure: AuthenticationHandler.Azure(name: self.azure.name, email: self.azure.email),
             authorizations: AuthenticationHandler.AuthorizationsModel(roles: self.authorizations.roles)
         )
-        let jsonData = try? encoder.encode(body)
-        return jsonData
+        return body
     }
 }
 

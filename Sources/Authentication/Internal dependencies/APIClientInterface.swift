@@ -52,9 +52,9 @@ extension APIClient {
             
             switch automatedLoginModel.user {
             case .azure(let azureUser):
-                body = azureUser.asJsonData
+                body = azureUser.asRequestBody
             case .dcs(let dcsUser):
-                body = dcsUser.asJsonData
+                body = dcsUser.asRequestBody
             }
             
             let request = makePostRequest(url: URL(string: automatedLoginModel.url)!, requestBody: body)
