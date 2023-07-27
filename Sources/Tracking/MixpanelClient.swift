@@ -15,6 +15,17 @@ public enum EventTrigger {
     case onTap(String)
     case willTerminate
     case action(String)
+    case log(LogInput)
+}
+
+public struct LogInput {
+    let message: String
+    let identifier: String
+    
+    public init(message: String, identifier: String) {
+        self.message = message
+        self.identifier = identifier
+    }
 }
 
 /// Generic Mixpanel client
@@ -60,11 +71,19 @@ public struct MixPanelClient {
     ///    }
     ///}
     /// ````
-    public var trackEvent: (
-        _ event: EventTrigger,
-        _ screenIdentifier: String?,
-        _ extraProperties: [String: AnyObject]?
-    ) -> Void
+    public var trackEvent: (TrackEventInput) -> Void
+}
+
+public struct TrackEventInput {
+    let event: EventTrigger
+    let screenIdentifier: String?
+    let extraProperties: [String: AnyObject]?
+    
+    public init(event: EventTrigger, screenIdentifier: String? = nil, extraProperties: [String : AnyObject]? = nil) {
+        self.event = event
+        self.screenIdentifier = screenIdentifier
+        self.extraProperties = extraProperties
+    }
 }
 
 public extension MixPanelClient {
@@ -72,11 +91,33 @@ public extension MixPanelClient {
         initialise: {
             Mixpanel.initialize(token: $0, trackAutomaticEvents: true)
         },
-        trackEvent: { event, screenIdentifier, extraProperties in
+        trackEvent: { input in
             
-            var eventName: String = generateEventName(event)
+            let event = input.event
+            let screenIdentifier = input.screenIdentifier
+            let extraProperties = input.extraProperties
+            
+            var eventName: String
+            
             
             var properties: [String: MixpanelType] = [:]
+            
+            switch event {
+            case .viewAppear:
+                eventName = "View Page"
+                
+            case .onTap(let value):
+                eventName = "On Tap \(value)"
+                
+            case .willTerminate:
+                eventName = "App Terminated"
+            case .action(let value):
+                eventName = "\(value)"
+            case .log(let input):
+                eventName = "Log"
+                properties["LogMessage"] = input.message
+                properties["LogIdentifier"] = input.identifier
+            }
             
             if let screenIdentifier = screenIdentifier {
                 properties["ScreenIdentifier"] = screenIdentifier
@@ -103,21 +144,5 @@ public extension MixPanelClient {
 }
 
 public extension MixPanelClient {
-    static var emptyClient = Self(initialise: { _ in }, trackEvent: { _, _, _ in })
-}
-
-private func generateEventName(_ event: EventTrigger) -> String {
-        
-    switch event {
-    case .viewAppear:
-        return "View Page"
-        
-    case .onTap(let value):
-        return "On Tap \(value)"
-        
-    case .willTerminate:
-        return "App Terminated"
-    case .action(let value):
-        return "\(value)"
-    }
+    static var emptyClient = Self(initialise: { _ in }, trackEvent: { _ in })
 }
