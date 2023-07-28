@@ -1,6 +1,6 @@
 //
 //  MixpanelClient.swift
-//  
+//
 //
 //  Created by Nicolai Dam on 17/10/2022.
 //
@@ -72,6 +72,7 @@ public struct MixPanelClient {
     ///}
     /// ````
     public var trackEvent: (TrackEventInput) -> Void
+    public var registerSuperProperty: (_ key: String, _ value: String) -> Void
 }
 
 public struct TrackEventInput {
@@ -139,10 +140,14 @@ public extension MixPanelClient {
             Mixpanel.mainInstance().track(
                 event: eventName, properties: properties
             )
+        },
+        registerSuperProperty: { key, value in
+            Mixpanel.mainInstance().registerSuperProperties([key: value])
         }
     )
 }
 
 public extension MixPanelClient {
-    static var emptyClient = Self(initialise: { _ in }, trackEvent: { _ in })
+    static var emptyClient = Self(initialise: { _ in }, trackEvent: { _ in }, registerSuperProperty: { _, _ in})
 }
+
