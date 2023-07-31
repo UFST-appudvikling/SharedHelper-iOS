@@ -48,7 +48,7 @@ let package = Package(
             dependencies: ["Networking"]),
         .target(
             name: "Authentication",
-            dependencies: ["SecurityHandler"]),
+            dependencies: ["SecurityHandler", "Networking",]),
         .target(
             name: "SecurityHandler",
             dependencies: [],

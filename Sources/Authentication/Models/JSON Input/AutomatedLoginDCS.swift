@@ -29,8 +29,7 @@ public struct AutomatedLoginDCSUser: Codable, Equatable, Identifiable, Hashable 
         case authorizations
     }
     
-    var asJsonData: Data? {
-        let encoder = JSONEncoder()
+    var asRequestBody: AuthenticationHandler.AutomatedLoginRequestBody {
         let body = AuthenticationHandler.AutomatedLoginRequestBody(
             apiKey: self.apiKey,
             clientID: self.clientID,
@@ -63,8 +62,7 @@ public struct AutomatedLoginDCSUser: Codable, Equatable, Identifiable, Hashable 
                 countryCode: self.dcs.delegator.countryCode
             )
         )
-        let jsonData = try? encoder.encode(body)
-        return jsonData
+        return body
     }
 }
 

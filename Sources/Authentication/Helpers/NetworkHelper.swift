@@ -63,16 +63,6 @@ func createTokenRequest(urlString: String, method: String, header: [String: Stri
     URLRequest.httpBody = body
     return URLRequest
 }
-func createUserRequest(urlString: String, method: String, header: [String: String]) throws -> URLRequest {
-    guard
-        let url = URL(string: urlString)
-    else { throw AuthenticationHandler.CustomError.invalidURL }
-    
-    var URLRequest = URLRequest(url: url)
-    URLRequest.httpMethod = method
-    URLRequest.allHTTPHeaderFields = header
-    return URLRequest
-}
 
 func createGetTokenBody(type: GetTokenType, configuration: AuthenticationHandler.Configuration, codeVerifier: String?) -> Data? {
         
