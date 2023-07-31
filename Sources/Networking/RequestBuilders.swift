@@ -12,6 +12,7 @@ import Foundation
 /// - Parameters:
 ///   - url: url + path to hit
 ///   - parameters: url query params
+///   - appID: App Identifier. The idea is that it should be persisted locally on the phone so the same identifier will be sent even when closing the app and open again. The app client has the responsibility to handle that.
 ///   - headers: extra heades
 /// - Returns: Request
 
@@ -50,6 +51,7 @@ public func makeGetRequest(
 ///   - url: url + path to hit
 ///   - requestBody: the body to be encoded to json
 ///   - encoder: supply custom encoder if needed
+///   - appID: App Identifier. The idea is that it should be persisted locally on the phone so the same identifier will be sent even when closing the app and open again. The app client has the responsibility to handle that.
 ///   - headers: extra heades
 /// - Returns: Request
 public func makePostRequest<Input: Encodable>(
@@ -81,6 +83,7 @@ public func makePostRequest<Input: Encodable>(
 ///   - url: url + path to hit
 ///   - requestBody: the body to be encoded to json
 ///   - encoder: supply custom encoder if needed
+///   - appID: App Identifier. The idea is that it should be persisted locally on the phone so the same identifier will be sent even when closing the app and open again. The app client has the responsibility to handle that.
 ///   - headers: extra heades
 /// - Returns: Request
 public func makeDeleteRequest<Input: Encodable>(
@@ -112,6 +115,7 @@ public func makeDeleteRequest<Input: Encodable>(
 ///   - url: url + path to hit
 ///   - requestBody: the body to be encoded to json
 ///   - encoder: supply custom encoder if needed
+///   - appID: App Identifier. The idea is that it should be persisted locally on the phone so the same identifier will be sent even when closing the app and open again. The app client has the responsibility to handle that.
 ///   - headers: extra heades
 /// - Returns: Request
 public func makePutRequest<Input: Encodable>(
