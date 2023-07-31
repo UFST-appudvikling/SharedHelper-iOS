@@ -19,7 +19,7 @@ import Foundation
 public func makeGetRequest(
     url: URL,
     parameters: [String: Any] = [:],
-    appID: String,
+    appID: String? = nil,
     headers: [String: String] = [:]
 ) -> URLRequest {
     var request: URLRequest
@@ -62,7 +62,7 @@ public func makePostRequest<Input: Encodable>(
         encoder.dateEncodingStrategy = .iso8601
         return encoder
     }(),
-    appID: String,
+    appID: String? = nil,
     headers: [String: String] = [:]
 ) -> URLRequest {
     var request = URLRequest(url: url).applyDefaultHeaders(appID: appID)
@@ -94,7 +94,7 @@ public func makeDeleteRequest<Input: Encodable>(
         encoder.dateEncodingStrategy = .iso8601
         return encoder
     }(),
-    appID: String,
+    appID: String? = nil,
     headers: [String: String] = [:]
 ) -> URLRequest {
     var request = URLRequest(url: url).applyDefaultHeaders(appID: appID)
@@ -126,7 +126,7 @@ public func makePutRequest<Input: Encodable>(
         encoder.dateEncodingStrategy = .iso8601
         return encoder
     }(),
-    appID: String,
+    appID: String? = nil,
     headers: [String: String] = [:]
 ) -> URLRequest {
     var request = URLRequest(url: url).applyDefaultHeaders(appID: appID)
@@ -142,10 +142,12 @@ public func makePutRequest<Input: Encodable>(
 }
 
 private extension URLRequest {
-    func applyDefaultHeaders(appID: String) -> URLRequest {
+    func applyDefaultHeaders(appID: String?) -> URLRequest {
         var copy = self
         var headers = self.allHTTPHeaderFields ?? [:]
-        headers["X-App-ID"] = appID
+        if let appID {
+            headers["X-App-ID"] = appID
+        }
         headers["X-Request-ID"] = UUID().uuidString
         headers["X-Platform"] = "iOS"
         headers["X-App-Version"] = Bundle.main.versionNumber
