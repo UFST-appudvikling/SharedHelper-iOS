@@ -7,10 +7,10 @@ class NetworkingTests: XCTestCase {
         let appIdentifier = "AppIdentifier"
         let req = makeGetRequest(url: URL.init(string: "https://test.dk")!, appID: appIdentifier)
         XCTAssertEqual(req.url, URL.init(string: "https://test.dk"))
-        XCTAssertTrue(req.value(forHTTPHeaderField: "X-Platform")!.contains("iOS"))
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-App-Version")!)
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-Request-ID")!)
-        XCTAssertTrue(req.value(forHTTPHeaderField: "X-App-ID")!.contains(appIdentifier))
+        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-Platform")!.contains("iOS"))
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-Version")!)
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Request-ID")!)
+        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-App-ID")!.contains(appIdentifier))
     }
 
     func testMakeGetWithParams() throws {
@@ -28,10 +28,10 @@ class NetworkingTests: XCTestCase {
         XCTAssertTrue(req.url!.query!.contains("int=1"))
         XCTAssertTrue(req.url!.query!.contains("double=1.0"))
         XCTAssertTrue(req.value(forHTTPHeaderField: authHeader.keys.first!)!.contains(authHeader.values.first!))
-        XCTAssertTrue(req.value(forHTTPHeaderField: "X-Platform")!.contains("iOS"))
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-App-Version")!)
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-Request-ID")!)
-        XCTAssertTrue(req.value(forHTTPHeaderField: "X-App-ID")!.contains(appIdentifier))
+        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-Platform")!.contains("iOS"))
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-Version")!)
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Request-ID")!)
+        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-App-ID")!.contains(appIdentifier))
     }
 
     func testMakePost() throws {
@@ -48,9 +48,9 @@ class NetworkingTests: XCTestCase {
         XCTAssertEqual(req.httpBody, resultBody)
         XCTAssertEqual(req.httpMethod, "POST")
         XCTAssertTrue(req.value(forHTTPHeaderField: authHeader.keys.first!)!.contains(authHeader.values.first!))
-        XCTAssertTrue(req.value(forHTTPHeaderField: "X-Platform")!.contains("iOS"))
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-App-Version")!)
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-Request-id")!)
-        XCTAssertTrue(req.value(forHTTPHeaderField: "X-App-ID")!.contains(appIdentifier))
+        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-Platform")!.contains("iOS"))
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-Version")!)
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Request-id")!)
+        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-App-ID")!.contains(appIdentifier))
     }
 }

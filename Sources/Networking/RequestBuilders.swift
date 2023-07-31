@@ -146,11 +146,11 @@ private extension URLRequest {
         var copy = self
         var headers = self.allHTTPHeaderFields ?? [:]
         if let appID {
-            headers["X-App-ID"] = appID
+            headers["X-UFST-App-ID"] = appID
         }
-        headers["X-Request-ID"] = UUID().uuidString
-        headers["X-Platform"] = "iOS"
-        headers["X-App-Version"] = Bundle.main.versionNumber
+        headers["X-UFST-Request-ID"] = UUID().uuidString
+        headers["X-UFST-Platform"] = "iOS"
+        headers["X-UFST-App-Version"] = Bundle.main.versionNumber
         copy.allHTTPHeaderFields = headers
         return copy
     }
