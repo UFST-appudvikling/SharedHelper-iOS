@@ -4,17 +4,15 @@ import XCTest
 class NetworkingTests: XCTestCase {
 
     func testMakeGetNoParams() throws {
-        let appIdentifier = "AppIdentifier"
-        let req = makeGetRequest(url: URL.init(string: "https://test.dk")!, appID: appIdentifier)
+        let req = makeGetRequest(url: URL.init(string: "https://test.dk")!)
         XCTAssertEqual(req.url, URL.init(string: "https://test.dk"))
         XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-Platform")!.contains("iOS"))
         XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-Version")!)
         XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Request-ID")!)
-        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-App-ID")!.contains(appIdentifier))
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-ID")!)
     }
 
     func testMakeGetWithParams() throws {
-        let appIdentifier = "AppIdentifier"
         let params: [String: Any] = [
             "int": 1,
             "double": 1.0
@@ -22,7 +20,7 @@ class NetworkingTests: XCTestCase {
 
         let authHeader: [String: String] = ["Authorization": "Some token" ]
 
-        let req = makeGetRequest(url: URL.init(string: "https://test.dk")!, parameters: params, appID: appIdentifier, headers: authHeader)
+        let req = makeGetRequest(url: URL.init(string: "https://test.dk")!, parameters: params, headers: authHeader)
         XCTAssertEqual(req.url?.host, "test.dk")
         XCTAssertEqual(req.httpMethod, "GET")
         XCTAssertTrue(req.url!.query!.contains("int=1"))
@@ -31,11 +29,10 @@ class NetworkingTests: XCTestCase {
         XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-Platform")!.contains("iOS"))
         XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-Version")!)
         XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Request-ID")!)
-        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-App-ID")!.contains(appIdentifier))
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-ID")!)
     }
 
     func testMakePost() throws {
-        let appIdentifier = "AppIdentifier"
         struct Vehicle: Encodable {
             var id: Int
             var name: String
@@ -44,13 +41,52 @@ class NetworkingTests: XCTestCase {
         let mercedes = Vehicle(id: 1, name: "Mercedes 220d")
         let resultBody = try encoder.encode(mercedes)
         let authHeader: [String: String] = ["Authorization": "Some token" ]
-        let req = makePostRequest(url: URL.init(string: "https://test.dk")!, requestBody: mercedes, encoder: encoder, appID: appIdentifier, headers: authHeader)
+        let req = makePostRequest(url: URL.init(string: "https://test.dk")!, requestBody: mercedes, encoder: encoder, headers: authHeader)
         XCTAssertEqual(req.httpBody, resultBody)
         XCTAssertEqual(req.httpMethod, "POST")
         XCTAssertTrue(req.value(forHTTPHeaderField: authHeader.keys.first!)!.contains(authHeader.values.first!))
         XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-Platform")!.contains("iOS"))
         XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-Version")!)
         XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Request-id")!)
-        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-App-ID")!.contains(appIdentifier))
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-ID")!)
+    }
+    
+    func test_getAppIDFromUserDefaults_Empty() {
+        
+        let uuid = UUID()
+        var savedValuesArray: [String] = []
+        var key: String?
+        
+        let result = getAppIDFromUserDefaults(
+            generateUIID: { uuid },
+            saveAppIDInUserDefaults: { savedValuesArray.append($0) },
+            getAppID: {
+                key = $0
+                return nil
+            }
+        )
+        
+        XCTAssertEqual(uuid.uuidString, result)
+        XCTAssertEqual(savedValuesArray, [uuid.uuidString])
+        XCTAssertEqual(key, "appID")
+        
+    }
+    
+    func test_getAppIDFromUserDefaults_ExistingAppID() {
+        
+        var key: String?
+        let savedValue = "savedValue"
+        
+        let result = getAppIDFromUserDefaults(
+            generateUIID: { fatalError() },
+            saveAppIDInUserDefaults: { _ in fatalError() },
+            getAppID: {
+                key = $0
+                return savedValue
+            }
+        )
+        
+        XCTAssertEqual(savedValue, result)
+        XCTAssertEqual(key, "appID")
     }
 }
