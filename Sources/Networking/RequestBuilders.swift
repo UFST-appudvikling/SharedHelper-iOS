@@ -36,7 +36,7 @@ public func makeGetRequest(
         let escapedPlusChar = comps.url!.absoluteString.replacingOccurrences(of: "+", with: "%2B")
         request = .init(url: URL(string: escapedPlusChar)!)
     }
-    var requestWithDefaultHeaders = request.applyDefaultHeaders(appID: getAppIDFromUserDefaults())
+    var requestWithDefaultHeaders = request.applyDefaultHeaders(appID: RequestBuilder.getAppID())
     requestWithDefaultHeaders.setValue("application/json", forHTTPHeaderField: "Content-Type")
     if !headers.isEmpty {
         var headerFields = requestWithDefaultHeaders.allHTTPHeaderFields ?? [:]
@@ -64,7 +64,7 @@ public func makePostRequest<Input: Encodable>(
     }(),
     headers: [String: String] = [:]
 ) -> URLRequest {
-    var request = URLRequest(url: url).applyDefaultHeaders(appID: getAppIDFromUserDefaults())
+    var request = URLRequest(url: url).applyDefaultHeaders(appID: RequestBuilder.getAppID())
     request.httpMethod = "POST"
     request.httpBody = try! encoder.encode(requestBody)
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -94,7 +94,7 @@ public func makeDeleteRequest<Input: Encodable>(
     }(),
     headers: [String: String] = [:]
 ) -> URLRequest {
-    var request = URLRequest(url: url).applyDefaultHeaders(appID: getAppIDFromUserDefaults())
+    var request = URLRequest(url: url).applyDefaultHeaders(appID: RequestBuilder.getAppID())
     request.httpMethod = "DELETE"
     request.httpBody = try! encoder.encode(requestBody)
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -124,7 +124,7 @@ public func makePutRequest<Input: Encodable>(
     }(),
     headers: [String: String] = [:]
 ) -> URLRequest {
-    var request = URLRequest(url: url).applyDefaultHeaders(appID: getAppIDFromUserDefaults())
+    var request = URLRequest(url: url).applyDefaultHeaders(appID: RequestBuilder.getAppID())
     request.httpMethod = "PUT"
     request.httpBody = try! encoder.encode(requestBody)
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -149,18 +149,21 @@ private extension URLRequest {
     }
 }
 
-/// If there already exists a appID this will be returned, otherwise there is created a new uiid and saved locally
-func getAppIDFromUserDefaults(
-    generateUIID: () -> UUID = { UUID() },
-    saveAppID: (_ value: String) -> Void = { UserDefaults.standard.set(appIDKey, forKey: $0) },
-    getAppID: (_ key: String) -> String? = { UserDefaults.standard.string(forKey: $0) }
-) -> String {
-    guard let existingAppID = getAppID(appIDKey) else {
-        let value = generateUIID().uuidString
-        saveAppID(value)
-        return value
+actor RequestBuilder {
+    
+    /// If there already exists a appID this will be returned, otherwise there is created a new uiid and saved locally
+    public static func getAppID(
+        generateUIID: () -> UUID = { UUID() },
+        saveAppID: (_ value: String) -> Void = { UserDefaults.standard.set(appIDKey, forKey: $0) },
+        getAppID: (_ key: String) -> String? = { UserDefaults.standard.string(forKey: $0) }
+    ) -> String {
+        guard let existingAppID = getAppID(appIDKey) else {
+            let value = generateUIID().uuidString
+            saveAppID(value)
+            return value
+        }
+        return existingAppID
     }
-    return existingAppID
 }
 
 private extension Bundle {

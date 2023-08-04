@@ -6,10 +6,10 @@ class NetworkingTests: XCTestCase {
     func testMakeGetNoParams() throws {
         let req = makeGetRequest(url: URL.init(string: "https://test.dk")!)
         XCTAssertEqual(req.url, URL.init(string: "https://test.dk"))
-        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-Platform")!.contains("iOS"))
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-Version")!)
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Request-ID")!)
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-ID")!)
+        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-Client-Platform")!.contains("iOS"))
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-Version")!)
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-Request-ID")!)
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-ID")!)
     }
 
     func testMakeGetWithParams() throws {
@@ -26,10 +26,10 @@ class NetworkingTests: XCTestCase {
         XCTAssertTrue(req.url!.query!.contains("int=1"))
         XCTAssertTrue(req.url!.query!.contains("double=1.0"))
         XCTAssertTrue(req.value(forHTTPHeaderField: authHeader.keys.first!)!.contains(authHeader.values.first!))
-        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-Platform")!.contains("iOS"))
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-Version")!)
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Request-ID")!)
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-ID")!)
+        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-Client-Platform")!.contains("iOS"))
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-Version")!)
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-Request-ID")!)
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-ID")!)
     }
 
     func testMakePost() throws {
@@ -45,21 +45,21 @@ class NetworkingTests: XCTestCase {
         XCTAssertEqual(req.httpBody, resultBody)
         XCTAssertEqual(req.httpMethod, "POST")
         XCTAssertTrue(req.value(forHTTPHeaderField: authHeader.keys.first!)!.contains(authHeader.values.first!))
-        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-Platform")!.contains("iOS"))
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-Version")!)
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Request-id")!)
-        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-App-ID")!)
+        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-Client-Platform")!.contains("iOS"))
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-Version")!)
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-Request-id")!)
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-ID")!)
     }
     
-    func test_getAppIDFromUserDefaults_Empty() {
+    func test_getAppID_Empty() {
         
         let uuid = UUID()
         var savedValuesArray: [String] = []
         var key: String?
         
-        let result = getAppIDFromUserDefaults(
+        let result = RequestBuilder.getAppID(
             generateUIID: { uuid },
-            saveAppIDInUserDefaults: { savedValuesArray.append($0) },
+            saveAppID: { savedValuesArray.append($0) },
             getAppID: {
                 key = $0
                 return nil
@@ -72,14 +72,14 @@ class NetworkingTests: XCTestCase {
         
     }
     
-    func test_getAppIDFromUserDefaults_ExistingAppID() {
+    func test_getAppID_ExistingAppID() {
         
         var key: String?
         let savedValue = "savedValue"
         
-        let result = getAppIDFromUserDefaults(
+        let result = RequestBuilder.getAppID(
             generateUIID: { fatalError() },
-            saveAppIDInUserDefaults: { _ in fatalError() },
+            saveAppID: { _ in fatalError() },
             getAppID: {
                 key = $0
                 return savedValue
