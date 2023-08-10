@@ -151,7 +151,7 @@ private extension URLRequest {
 
 actor RequestBuilder {
     
-    /// If there already exists a appID this will be returned, otherwise there is created a new uiid and saved locally
+    /// If there already exists a appID in UserDefaults this will be returned, otherwise there is created a new uiid and saved locally
     public static func getAppID(
         generateUIID: () -> UUID = { UUID() },
         saveAppID: (_ value: String) -> Void = { UserDefaults.standard.set(appIDKey, forKey: $0) },
