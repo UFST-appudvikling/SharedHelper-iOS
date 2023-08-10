@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// Request for getting
 /// Per default a request id, app version platform is in the header for better logging on the backend
@@ -149,7 +150,7 @@ private extension URLRequest {
             headers["X-UFST-App-ID"] = appID
         }
         headers["X-UFST-Request-ID"] = UUID().uuidString
-        headers["X-UFST-Platform"] = "iOS"
+        headers["X-UFST-Platform"] = "\(UIDevice.current.systemName) \(UIDevice.current.systemVersion)"
         headers["X-UFST-App-Version"] = Bundle.main.versionNumber
         copy.allHTTPHeaderFields = headers
         return copy
