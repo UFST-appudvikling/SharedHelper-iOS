@@ -76,9 +76,9 @@ public struct MixPanelClient {
 }
 
 public struct TrackEventInput {
-    let event: EventTrigger
-    let screenIdentifier: String?
-    let extraProperties: [String: AnyObject]?
+    public let event: EventTrigger
+    public let screenIdentifier: String?
+    public let extraProperties: [String: AnyObject]?
     
     public init(event: EventTrigger, screenIdentifier: String? = nil, extraProperties: [String : AnyObject]? = nil) {
         self.event = event
