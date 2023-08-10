@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 let appIDKey = "appID"
 
@@ -142,7 +143,7 @@ private extension URLRequest {
         var headers = self.allHTTPHeaderFields ?? [:]
         headers["X-UFST-Client-ID"] = appID
         headers["X-UFST-Client-Request-ID"] = UUID().uuidString
-        headers["X-UFST-Client-Platform"] = "iOS"
+        headers["X-UFST-Client-Platform"] = "\(UIDevice.current.systemName) \(UIDevice.current.systemVersion)"
         headers["X-UFST-Client-Version"] = Bundle.main.versionNumber
         copy.allHTTPHeaderFields = headers
         return copy
