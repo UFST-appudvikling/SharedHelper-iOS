@@ -150,10 +150,10 @@ private extension URLRequest {
     }
 }
 
-actor RequestBuilder {
+public actor RequestBuilder {
     
     /// If there already exists a appID in UserDefaults this will be returned, otherwise there is created a new uiid and saved locally
-    public static func getAppID(
+    static func getAppID(
         generateUIID: () -> UUID = { UUID() },
         saveAppID: (_ value: String) -> Void = { UserDefaults.standard.set(appIDKey, forKey: $0) },
         getAppID: (_ key: String) -> String? = { UserDefaults.standard.string(forKey: $0) }
@@ -164,6 +164,12 @@ actor RequestBuilder {
             return value
         }
         return existingAppID
+    }
+    
+    /// Public app id func that can be used by the client to get app id, for example when it should be sent to Mixpanel or Firebase
+    public static func appID() -> String {
+        let appID = getAppID()
+        return appID
     }
 }
 
