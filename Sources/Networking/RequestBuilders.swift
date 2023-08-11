@@ -33,11 +33,11 @@ public func makeGetRequest(
         }
         var comps = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         comps.queryItems = items
-
+        
         let escapedPlusChar = comps.url!.absoluteString.replacingOccurrences(of: "+", with: "%2B")
         request = .init(url: URL(string: escapedPlusChar)!)
     }
-    var requestWithDefaultHeaders = request.applyDefaultHeaders(appID: RequestBuilder.getAppID())
+    var requestWithDefaultHeaders = applyHeadersToRequest(request: request, appID: RequestBuilder.getAppID())
     requestWithDefaultHeaders.setValue("application/json", forHTTPHeaderField: "Content-Type")
     if !headers.isEmpty {
         var headerFields = requestWithDefaultHeaders.allHTTPHeaderFields ?? [:]
@@ -65,16 +65,17 @@ public func makePostRequest<Input: Encodable>(
     }(),
     headers: [String: String] = [:]
 ) -> URLRequest {
-    var request = URLRequest(url: url).applyDefaultHeaders(appID: RequestBuilder.getAppID())
-    request.httpMethod = "POST"
-    request.httpBody = try! encoder.encode(requestBody)
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    let request = URLRequest(url: url)
+    var requestWithDefaultHeaders = applyHeadersToRequest(request: request, appID: RequestBuilder.getAppID())
+    requestWithDefaultHeaders.httpMethod = "POST"
+    requestWithDefaultHeaders.httpBody = try! encoder.encode(requestBody)
+    requestWithDefaultHeaders.setValue("application/json", forHTTPHeaderField: "Content-Type")
     if !headers.isEmpty {
-        var headerFields = request.allHTTPHeaderFields ?? [:]
+        var headerFields = requestWithDefaultHeaders.allHTTPHeaderFields ?? [:]
         headerFields.merge(headers, uniquingKeysWith: { $1 })
-        request.allHTTPHeaderFields = headerFields
-    } 
-    return request
+        requestWithDefaultHeaders.allHTTPHeaderFields = headerFields
+    }
+    return requestWithDefaultHeaders
 }
 
 /// Request for deleting
@@ -95,16 +96,17 @@ public func makeDeleteRequest<Input: Encodable>(
     }(),
     headers: [String: String] = [:]
 ) -> URLRequest {
-    var request = URLRequest(url: url).applyDefaultHeaders(appID: RequestBuilder.getAppID())
-    request.httpMethod = "DELETE"
-    request.httpBody = try! encoder.encode(requestBody)
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    let request = URLRequest(url: url)
+    var requestWithDefaultHeaders = applyHeadersToRequest(request: request, appID: RequestBuilder.getAppID())
+    requestWithDefaultHeaders.httpMethod = "DELETE"
+    requestWithDefaultHeaders.httpBody = try! encoder.encode(requestBody)
+    requestWithDefaultHeaders.setValue("application/json", forHTTPHeaderField: "Content-Type")
     if !headers.isEmpty {
-        var headerFields = request.allHTTPHeaderFields ?? [:]
+        var headerFields = requestWithDefaultHeaders.allHTTPHeaderFields ?? [:]
         headerFields.merge(headers, uniquingKeysWith: { $1 })
-        request.allHTTPHeaderFields = headerFields
+        requestWithDefaultHeaders.allHTTPHeaderFields = headerFields
     }
-    return request
+    return requestWithDefaultHeaders
 }
 
 /// Request for updating
@@ -125,34 +127,32 @@ public func makePutRequest<Input: Encodable>(
     }(),
     headers: [String: String] = [:]
 ) -> URLRequest {
-    var request = URLRequest(url: url).applyDefaultHeaders(appID: RequestBuilder.getAppID())
-    request.httpMethod = "PUT"
-    request.httpBody = try! encoder.encode(requestBody)
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    let request = URLRequest(url: url)
+    var requestWithDefaultHeaders = applyHeadersToRequest(request: request, appID: RequestBuilder.getAppID())
+    requestWithDefaultHeaders.httpMethod = "PUT"
+    requestWithDefaultHeaders.httpBody = try! encoder.encode(requestBody)
+    requestWithDefaultHeaders.setValue("application/json", forHTTPHeaderField: "Content-Type")
     if !headers.isEmpty {
-        var headerFields = request.allHTTPHeaderFields ?? [:]
+        var headerFields = requestWithDefaultHeaders.allHTTPHeaderFields ?? [:]
         headerFields.merge(headers, uniquingKeysWith: { $1 })
-        request.allHTTPHeaderFields = headerFields
+        requestWithDefaultHeaders.allHTTPHeaderFields = headerFields
     }
-    return request
+    return requestWithDefaultHeaders
 }
 
-private extension URLRequest {
-    func applyDefaultHeaders(appID: String) -> URLRequest {
-        var copy = self
-        var headers = self.allHTTPHeaderFields ?? [:]
-        headers["X-UFST-Client-ID"] = appID
-        headers["X-UFST-Client-Request-ID"] = UUID().uuidString
-        headers["X-UFST-Client-Platform"] = "\(UIDevice.current.systemName) \(UIDevice.current.systemVersion)"
-        headers["X-UFST-Client-Version"] = Bundle.main.versionNumber
-        copy.allHTTPHeaderFields = headers
-        return copy
-    }
+private func applyHeadersToRequest(request: URLRequest, appID: String) -> URLRequest {
+    var copy = request
+    var headers = request.allHTTPHeaderFields ?? [:]
+    headers["X-UFST-Client-ID"] = appID
+    headers["X-UFST-Client-Request-ID"] = UUID().uuidString
+    headers["X-UFST-Client-Platform"] = "\(UIDevice.current.systemName) \(UIDevice.current.systemVersion)"
+    headers["X-UFST-Client-Version"] = Bundle.main.versionNumber
+    copy.allHTTPHeaderFields = headers
+    return copy
 }
 
 public actor RequestBuilder {
     
-    /// If there already exists a appID in UserDefaults this will be returned, otherwise there is created a new uiid and saved locally
     static func getAppID(
         generateUIID: () -> UUID = { UUID() },
         saveAppID: (_ value: String) -> Void = { UserDefaults.standard.set(appIDKey, forKey: $0) },
@@ -166,8 +166,8 @@ public actor RequestBuilder {
         return existingAppID
     }
     
-    /// Public app id func that can be used by the client to get app id, for example when it should be sent to Mixpanel or Firebase
-    public static func appID() -> String {
+    /// App ID hat can be used by the client, for example if should be sent to Mixpanel or Firebase so tracing from Kibana is possible
+    public static var appID: String {
         let appID = getAppID()
         return appID
     }
@@ -176,5 +176,14 @@ public actor RequestBuilder {
 private extension Bundle {
     var versionNumber: String {
         return infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
+    }
+}
+
+extension URLRequest {
+    /// Public helper that adds the UFST headers to a given request
+    /// This func should be used on URLRequests from clients that are not using the request builders
+    public func applyDefaultUFSTHeaders() -> Self {
+        let requestWithHeaders: URLRequest = applyHeadersToRequest(request: self, appID: RequestBuilder.getAppID())
+        return requestWithHeaders
     }
 }

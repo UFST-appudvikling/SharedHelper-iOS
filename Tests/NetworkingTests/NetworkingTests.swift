@@ -51,6 +51,44 @@ class NetworkingTests: XCTestCase {
         XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-ID")!)
     }
     
+    func testMakeDelete() throws {
+        struct Vehicle: Encodable {
+            var id: Int
+            var name: String
+        }
+        let encoder = JSONEncoder()
+        let mercedes = Vehicle(id: 1, name: "Mercedes 220d")
+        let resultBody = try encoder.encode(mercedes)
+        let authHeader: [String: String] = ["Authorization": "Some token" ]
+        let req = makeDeleteRequest(url: URL.init(string: "https://test.dk")!, requestBody: mercedes, encoder: encoder, headers: authHeader)
+        XCTAssertEqual(req.httpBody, resultBody)
+        XCTAssertEqual(req.httpMethod, "DELETE")
+        XCTAssertTrue(req.value(forHTTPHeaderField: authHeader.keys.first!)!.contains(authHeader.values.first!))
+        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-Client-Platform")!.contains("iOS"))
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-Version")!)
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-Request-id")!)
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-ID")!)
+    }
+    
+    func testMakePut() throws {
+        struct Vehicle: Encodable {
+            var id: Int
+            var name: String
+        }
+        let encoder = JSONEncoder()
+        let mercedes = Vehicle(id: 1, name: "Mercedes 220d")
+        let resultBody = try encoder.encode(mercedes)
+        let authHeader: [String: String] = ["Authorization": "Some token" ]
+        let req = makePutRequest(url: URL.init(string: "https://test.dk")!, requestBody: mercedes, encoder: encoder, headers: authHeader)
+        XCTAssertEqual(req.httpBody, resultBody)
+        XCTAssertEqual(req.httpMethod, "PUT")
+        XCTAssertTrue(req.value(forHTTPHeaderField: authHeader.keys.first!)!.contains(authHeader.values.first!))
+        XCTAssertTrue(req.value(forHTTPHeaderField: "X-UFST-Client-Platform")!.contains("iOS"))
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-Version")!)
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-Request-id")!)
+        XCTAssertNotNil(req.value(forHTTPHeaderField: "X-UFST-Client-ID")!)
+    }
+    
     func test_getAppID_Empty() {
         
         let uuid = UUID()
