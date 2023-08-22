@@ -106,7 +106,7 @@ class NetworkingTests: XCTestCase {
         
         XCTAssertEqual(uuid.uuidString, result)
         XCTAssertEqual(savedValuesArray, [uuid.uuidString])
-        XCTAssertEqual(key, "appID")
+        XCTAssertEqual(key, "UFST-Client-ID")
         
     }
     
@@ -125,6 +125,6 @@ class NetworkingTests: XCTestCase {
         )
         
         XCTAssertEqual(savedValue, result)
-        XCTAssertEqual(key, "appID")
+        XCTAssertEqual(key, "UFST-Client-ID")
     }
 }
