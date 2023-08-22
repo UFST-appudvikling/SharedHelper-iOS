@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-let appIDKey = "appID"
+let appIDKey = "UFST-Client-ID"
 
 /// Request for getting
 /// Per default a request id, app version platform is in the header for better logging on the backend
