@@ -22,8 +22,6 @@ let package = Package(
         .library(
             name: "Tracking",
             targets: ["Tracking"]),
-        .library(name: "VersionCheck",
-                 targets: ["VersionCheck"]),
         .library(name: "UIComponents",
                  targets: ["UIComponents"])
     ],
@@ -31,10 +29,6 @@ let package = Package(
         .package(
             url: "https://github.com/mixpanel/mixpanel-swift",
             from: "4.0.3"
-        ),
-        .package(
-            url: "https://github.com/firebase/firebase-ios-sdk",
-            from: "9.3.0"
         )
     ],
     targets: [
@@ -59,11 +53,6 @@ let package = Package(
                 .product(name: "Mixpanel", package: "mixpanel-swift"),
             ]),
         .target(
-            name: "VersionCheck",
-            dependencies: [
-                .product(name: "FirebaseRemoteConfig", package: "firebase-ios-sdk"),
-            ]),
-        .target(
             name: "UIComponents",
             dependencies: [],
             resources: [
@@ -71,9 +60,6 @@ let package = Package(
                 .process("Resources/Assets/Icons")
             ]
         ),
-        .testTarget(
-            name: "VersionCheckTests",
-            dependencies: ["VersionCheck"]),
         .testTarget(
             name: "SecurityHandlerTests",
             dependencies: ["SecurityHandler"]),
