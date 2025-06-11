@@ -7,9 +7,9 @@
 
 import Foundation
 
-func sendRequest<Response: Codable>(request: URLRequest) async throws -> Response? {
+func sendRequest<Response: Codable>(request: URLRequest, urlSession: URLSession) async throws -> Response? {
     do {
-        let (data, response) = try await URLSession.shared.data(for: request, delegate: nil)
+        let (data, response) = try await urlSession.data(for: request, delegate: nil)
         guard let response = response as? HTTPURLResponse else {
             throw AuthenticationHandler.CustomError.noResponse
         }

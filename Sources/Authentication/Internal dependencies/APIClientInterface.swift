@@ -21,7 +21,7 @@ struct APIClient {
 extension APIClient {
     
     /// Live implementation
-    static let live = Self.init(
+    static func live(urlSession: URLSession) -> Self { Self.init(
         getToken: { input in
             var body: Data?
             
@@ -40,7 +40,7 @@ extension APIClient {
                 body: body
             )
             
-            if let response: AuthenticationHandler.TokenModel = try await sendRequest(request: request) {
+            if let response: AuthenticationHandler.TokenModel = try await sendRequest(request: request, urlSession: urlSession) {
                 return response
             } else {
                 throw AuthenticationHandler.CustomError.invalidData
@@ -59,7 +59,7 @@ extension APIClient {
             
             let request = makePostRequest(url: URL(string: automatedLoginModel.url)!, requestBody: body)
             
-            if let response: AuthenticationHandler.TokenModel = try await sendRequest(request: request) {
+            if let response: AuthenticationHandler.TokenModel = try await sendRequest(request: request, urlSession: urlSession) {
                 return response
             } else {
                 throw AuthenticationHandler.CustomError.invalidData
@@ -73,7 +73,7 @@ extension APIClient {
             
             let request = makeGetRequest(url: url, headers: ["Authorization": "Bearer \(token.accessToken)"])
             
-            if let response: AuthenticationHandler.UserModel = try await sendRequest(request: request) {
+            if let response: AuthenticationHandler.UserModel = try await sendRequest(request: request, urlSession: urlSession) {
                 return response
             } else {
                 throw AuthenticationHandler.CustomError.invalidData
@@ -102,6 +102,7 @@ extension APIClient {
             }
         }
     )
+    }
 }
 
 struct GetTokenRequestInput {
