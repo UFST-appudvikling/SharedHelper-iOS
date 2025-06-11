@@ -71,10 +71,10 @@ public final class AuthenticationHandler {
     ///        )
     ///    )
     /// ````
-    public init(loginType: LoginType) {
+    public init(loginType: LoginType, urlSession: URLSession) {
         self.loginType = loginType
         self.keychainClient = .live
-        self.apiClient = .live
+        self.apiClient = .live(urlSession: urlSession)
         self.date = { Date() }
         self.pkceClient = .live
         let codeVerifier = self.pkceClient.generateCodeVerifier()
